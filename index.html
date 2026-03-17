@@ -40,6 +40,9 @@
     .approve-btn:disabled { opacity: 0.65; cursor: default; transform: none; }
     .approve-btn.approved { background: #16a34a; }
     .approve-btn.error { background: #dc2626; }
+    .download-btn { height: 34px; padding: 0 16px; border-radius: 999px; border: 1.5px solid #16a34a; background: transparent; color: #16a34a; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background .15s, opacity .15s; display: none; }
+    .download-btn:hover { background: rgba(22,163,74,0.07); }
+    .download-btn.visible { display: inline-flex; align-items: center; gap: 6px; }
 
     /* ── Contenteditable ── */
     [contenteditable="true"] { outline: none; border-radius: 3px; cursor: text; }
@@ -145,6 +148,7 @@
       </div>
       <button class="nav-arrow" id="nav-next" onclick="navigatePage(1)" title="Pagina successiva">&#8594;</button>
       <span class="nav-counter" id="nav-counter"></span>
+      <button class="download-btn" id="download-btn" onclick="downloadReviews()">&#10003; Scarica reviews.json</button>
       <button class="approve-btn" id="approve-btn" onclick="approvePage()">Approva pagina</button>
     </div>
   </header>
@@ -325,9 +329,6 @@
 <div class="copy-feedback" id="copy-feedback">Copiato</div>
 
 <script>
-  // ── Config ──
-  const WEBHOOK_URL = 'http://minipc:5678/webhook/perseo-review';
-
   // ── Data (injected by generate-review-bundle.py) ──
   window.PAGES = [
   {
@@ -1643,7 +1644,14 @@
 
   // ── State ──
   let currentIdx = 0;
-  const approvedSet = new Set();
+  const LS_PREFIX = 'cr_review_';
+
+  // Restore approved set from localStorage on init
+  const approvedSet = new Set(
+    Object.keys(localStorage)
+      .filter(k => k.startsWith(LS_PREFIX))
+      .map(k => k.slice(LS_PREFIX.length))
+  );
 
   // ── Helpers ──
   function esc(s) {
@@ -1947,32 +1955,55 @@
     };
   }
 
-  // ── Approve ──
-  async function approvePage() {
+  // ── Approve (saves to localStorage, no network) ──
+  function approvePage() {
     const btn = document.getElementById('approve-btn');
     btn.disabled = true;
     btn.textContent = '…';
 
     try {
       const payload = collectPageData();
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      localStorage.setItem(LS_PREFIX + payload.page_id, JSON.stringify(payload));
       approvedSet.add(payload.page_id);
       btn.className = 'approve-btn approved';
       btn.textContent = 'Approvato ✓';
       btn.disabled = false;
-      // Update dropdown option with checkmark
       const opt = document.querySelector(`#page-select option[value="${currentIdx}"]`);
       if (opt && !opt.text.startsWith('✓')) opt.text = '✓ ' + opt.text;
+      updateDownloadBtn();
     } catch(err) {
       btn.className = 'approve-btn error';
       btn.textContent = 'Errore, riprova';
       btn.disabled = false;
       console.error('Approve error:', err);
+    }
+  }
+
+  // ── Download all approved reviews as JSON ──
+  function downloadReviews() {
+    const reviews = Object.keys(localStorage)
+      .filter(k => k.startsWith(LS_PREFIX))
+      .map(k => { try { return JSON.parse(localStorage.getItem(k)); } catch(_) { return null; } })
+      .filter(Boolean);
+    const blob = new Blob([JSON.stringify(reviews, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'reviews.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── Update download button visibility + counter ──
+  function updateDownloadBtn() {
+    const btn = document.getElementById('download-btn');
+    const total = window.PAGES ? window.PAGES.length : 0;
+    const done = approvedSet.size;
+    if (done > 0) {
+      btn.classList.add('visible');
+      btn.textContent = '✓ Scarica reviews.json (' + done + '/' + total + ')';
+    } else {
+      btn.classList.remove('visible');
     }
   }
 
@@ -1983,9 +2014,11 @@
     window.PAGES.forEach((p, i) => {
       const opt = document.createElement('option');
       opt.value = i;
-      opt.text = p.page_name || ('Pagina ' + (i + 1));
+      const name = p.page_name || ('Pagina ' + (i + 1));
+      opt.text = approvedSet.has(p.page_id) ? '✓ ' + name : name;
       sel.appendChild(opt);
     });
+    updateDownloadBtn();
   }
 
   // ── Copy-on-click (for copy buttons removed — rely on browser selection) ──
