@@ -109,9 +109,10 @@
     .faq-layout { display: grid; grid-template-columns: 320px minmax(0,1fr); gap: 18px; }
     .sources,.faq-item,.seo-card { position: relative; padding: 18px; }
     .sources h3,.seo-card h3 { margin: 0 0 12px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c3); }
-    .source-item { padding-top: 12px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+    .source-item { padding-top: 12px; border-top: 1px solid var(--line); display: grid; gap: 6px; overflow: hidden; }
     .source-item:first-of-type { padding-top: 0; border-top: 0; }
-    .source-item strong { font-size: 15px; line-height: 1.28; }
+    .source-item strong { font-size: 15px; line-height: 1.28; word-break: break-word; overflow-wrap: break-word; }
+    .source-url { overflow-wrap: break-word; word-break: break-all; }
     .faq-list { display: grid; gap: 14px; }
     .faq-q { font-size: 20px; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 8px; }
     .contact-block { position: relative; background: linear-gradient(135deg,rgba(204,255,51,0.26),rgba(131,111,255,0.08)); border-radius: 30px; border: 1px solid rgba(33,25,81,0.08); padding: 28px; }
@@ -5566,9 +5567,14 @@
             <span class="extra-chevron" id="${chevId}">▼</span>
           </div>
           <div class="extra-body" id="${bodyId}">
-            ${copy.h2 !== undefined ? `<div class="extra-field"><label>H2</label><div class="extra-field-value" contenteditable="true" spellcheck="false" data-extra-section="${esc(extra.section)}" data-extra-field="h2">${esc(copy.h2)}</div></div>` : ''}
-            ${copy.text !== undefined ? `<div class="extra-field"><label>Testo</label><div class="extra-field-value" contenteditable="true" spellcheck="false" data-extra-section="${esc(extra.section)}" data-extra-field="text">${esc(copy.text)}</div></div>` : ''}
-            ${copy.subtitle !== undefined ? `<div class="extra-field"><label>Subtitle</label><div class="extra-field-value" contenteditable="true" spellcheck="false" data-extra-section="${esc(extra.section)}" data-extra-field="subtitle">${esc(copy.subtitle)}</div></div>` : ''}
+            ${Object.entries(copy).map(([field, val]) => {
+              if (typeof val === 'string') {
+                return `<div class="extra-field"><label>${esc(field)}</label><div class="extra-field-value" contenteditable="true" spellcheck="false" data-extra-section="${esc(extra.section)}" data-extra-field="${esc(field)}">${esc(val)}</div></div>`;
+              } else if (Array.isArray(val)) {
+                return `<div class="extra-field"><label>${esc(field)} <span style="font-weight:400;color:var(--c3)">(${val.length} elementi — non editabile qui)</span></label><div class="extra-field-value" style="opacity:.6;font-size:12px;font-family:monospace;white-space:pre-wrap">${esc(JSON.stringify(val, null, 2).slice(0, 400))}${JSON.stringify(val).length > 400 ? '\n…' : ''}</div></div>`;
+              }
+              return '';
+            }).join('')}
           </div>`;
         extrasList.appendChild(div);
       });
@@ -5726,9 +5732,8 @@
       const extraData = (page.suggested_extras || []).find(e => e.section === section);
       if (!extraData) return;
       const copy = { ...extraData.copy };
-      ['h2','text','subtitle'].forEach(field => {
-        const el = extraItem.querySelector(`[data-extra-field="${field}"]`);
-        if (el) copy[field] = txt(el);
+      extraItem.querySelectorAll('[data-extra-field]').forEach(el => {
+        copy[el.dataset.extraField] = txt(el);
       });
       acceptedExtras.push({ section, rationale: extraData.rationale, copy });
     });
