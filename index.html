@@ -5570,8 +5570,14 @@
             ${Object.entries(copy).map(([field, val]) => {
               if (typeof val === 'string') {
                 return `<div class="extra-field"><label>${esc(field)}</label><div class="extra-field-value" contenteditable="true" spellcheck="false" data-extra-section="${esc(extra.section)}" data-extra-field="${esc(field)}">${esc(val)}</div></div>`;
-              } else if (Array.isArray(val)) {
-                return `<div class="extra-field"><label>${esc(field)} <span style="font-weight:400;color:var(--c3)">(${val.length} elementi — non editabile qui)</span></label><div class="extra-field-value" style="opacity:.6;font-size:12px;font-family:monospace;white-space:pre-wrap">${esc(JSON.stringify(val, null, 2).slice(0, 400))}${JSON.stringify(val).length > 400 ? '\n…' : ''}</div></div>`;
+              } else if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
+                const itemsHtml = val.map((item, idx) => {
+                  const fieldsHtml = Object.entries(item)
+                    .filter(([k, v]) => typeof v === 'string')
+                    .map(([k, v]) => `<div class="extra-field" style="margin-top:6px"><label>${esc(k)}</label><div class="extra-field-value" contenteditable="true" spellcheck="false" data-extra-section="${esc(extra.section)}" data-extra-array-field="${esc(field)}" data-extra-array-idx="${idx}" data-extra-item-field="${esc(k)}">${esc(v)}</div></div>`).join('');
+                  return `<div style="background:rgba(33,25,81,0.03);border:1px solid rgba(33,25,81,0.08);border-radius:10px;padding:10px 12px;margin-top:8px">${fieldsHtml}</div>`;
+                }).join('');
+                return `<div class="extra-field"><label>${esc(field)} <span style="font-weight:400;color:var(--c3)">(${val.length})</span></label>${itemsHtml}</div>`;
               }
               return '';
             }).join('')}
@@ -5732,9 +5738,21 @@
       const extraData = (page.suggested_extras || []).find(e => e.section === section);
       if (!extraData) return;
       const copy = { ...extraData.copy };
+      // Collect edited string fields
       extraItem.querySelectorAll('[data-extra-field]').forEach(el => {
         copy[el.dataset.extraField] = txt(el);
       });
+      // Collect edited array fields (cards, points, scenarios, etc.)
+      const arrayMap = {};
+      extraItem.querySelectorAll('[data-extra-array-field]').forEach(el => {
+        const arrField = el.dataset.extraArrayField;
+        const idx = parseInt(el.dataset.extraArrayIdx);
+        const itemField = el.dataset.extraItemField;
+        if (!arrayMap[arrField]) arrayMap[arrField] = [];
+        if (!arrayMap[arrField][idx]) arrayMap[arrField][idx] = { ...((extraData.copy[arrField] || [])[idx] || {}) };
+        arrayMap[arrField][idx][itemField] = txt(el);
+      });
+      Object.assign(copy, arrayMap);
       acceptedExtras.push({ section, rationale: extraData.rationale, copy });
     });
 
