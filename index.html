@@ -8473,8 +8473,7 @@
     const hasWarnings = warnings && warnings.length > 0;
     const hasExtras = extras && extras.length > 0;
 
-    if (!hasWarnings && !hasExtras) { wrap.style.display = 'none'; return; }
-
+    // Always show wrap — SEO signals panel may need it even without warnings/extras
     wrap.style.display = '';
 
     if (hasWarnings) {
@@ -8564,6 +8563,11 @@
 
     if (!terms.length && !sig.paa_questions?.length) {
       section.style.display = 'none';
+      // If no warnings either, hide the entire yellow box
+      const warnSec = document.getElementById('warnings-section');
+      if (warnSec.style.display === 'none') {
+        document.getElementById('alerts-wrap').style.display = 'none';
+      }
       return;
     }
     section.style.display = '';
