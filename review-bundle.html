@@ -148,24 +148,27 @@
     .seo-tag.entity { background: rgba(204,255,51,0.35); }
     /* ── Keyword pool tags — tutti grigi, bordo varia per tier ── */
     .kw-tag { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; cursor: default; background: rgba(33,25,81,0.06); color: var(--c4); border: 1.5px solid rgba(33,25,81,0.13); }
-    .kw-tag.keyphrase { border-color: rgba(204,255,51,0.9); font-weight: 700; font-size: 13px; }
+    .kw-tag.keyphrase { border: 2px solid rgba(131,111,255,0.65); font-weight: 700; font-size: 13px; }
     .kw-tag.in-copy   { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
+    .kw-tag.keyphrase.in-copy { background: rgba(255,138,0,0.22); color: #7a3a00; border-color: rgba(131,111,255,0.65); }
     .kw-tag.entity    { border-color: rgba(131,111,255,0.55); }
     .kw-tag.entity.in-copy { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
     .kw-tag.missing   { color: #dc2626; font-weight: 700; border-color: rgba(33,25,81,0.13); }
     .kw-tag.missing::after { content: " ⚠"; font-size: 10px; }
     .kw-tag.pool      { font-size: 11px; background: rgba(33,25,81,0.04); color: var(--c5); border-color: transparent; }
-    .kw-pool-divider  { display: block; width: 100%; margin: 7px 0 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c5); border-top: 1px solid var(--line); padding-top: 7px; }
+    .kw-tag.pool.in-copy { opacity: .75; }
+    .kw-pool-divider  { margin: 10px 0 5px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c5); }
     /* keyphrase vol badge */
     .kw-vol-badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; background: rgba(33,25,81,0.06); color: var(--c3); border: 1.5px solid rgba(131,111,255,0.3); }
     /* ── PAA / FAQ angles — 2 colonne, pallino grigio/arancione ── */
     .seo-paa-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .seo-paa-col-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c3); margin-bottom: 6px; }
     .seo-paa { margin: 0; padding: 0; list-style: none; }
-    .seo-paa li { padding: 3px 0 3px 16px; position: relative; font-size: 12px; color: var(--c3); line-height: 1.5; }
-    .seo-paa li::before { content: "●"; position: absolute; left: 0; top: 6px; font-size: 6px; color: var(--c5); }
-    .seo-paa li.item-used { color: var(--c4); font-weight: 700; background: rgba(255,138,0,0.14); border-radius: 6px; padding-right: 6px; }
+    .seo-paa li { padding: 2px 0 2px 13px; position: relative; font-size: 12px; color: var(--c3); line-height: 1.5; }
+    .seo-paa li::before { content: "●"; position: absolute; left: 0; top: 4px; font-size: 9px; color: var(--c5); }
+    .seo-paa li.item-used { color: var(--c4); font-weight: 700; }
     .seo-paa li.item-used::before { color: #ff8a00; }
+    .seo-paa li.item-used .paa-text { background: rgba(255,138,0,0.14); border-radius: 4px; padding: 1px 5px; }
     /* ── SEO metadata orange box ── */
     .seo-meta-box { background: #fff4e6; border: 1.5px solid #e6820a; border-radius: 18px; padding: 16px 20px; }
     .seo-meta-box h4 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #7a3e00; }
@@ -230,7 +233,7 @@
           <!-- Keyword pool -->
           <div class="seo-group" id="seo-kw-pool-group" style="display:none">
             <div class="seo-group-label" id="seo-kw-pool-label">Pool keyword ricercate dall'agente</div>
-            <div class="seo-tags" id="seo-kw-pool-tags"></div>
+            <div id="seo-kw-pool-tags"></div>
           </div>
           <!-- Key entities -->
           <div class="seo-group" id="seo-entities-group" style="display:none">
@@ -10445,50 +10448,67 @@
       covBadge.innerHTML = `<span class="seo-coverage-badge ${covClass}">Copertura SEO: ${covFound}/${covTotal} (${covPct}%)</span>`;
     } else { covBadge.innerHTML = ''; }
 
-    // ── Keyword pool ───────────────────────────────────────────────────────
+    // ── Keyword pool + entities (Proposal 4 layout) ────────────────────────
     const allKws      = sig.all_keywords || [];
+    const entities    = sig.key_entities || [];
     const kwPoolGroup = document.getElementById('seo-kw-pool-group');
     const kwPoolTags  = document.getElementById('seo-kw-pool-tags');
     const kwPoolLabel = document.getElementById('seo-kw-pool-label');
-    if (allKws.length) {
+    // Entities group is now rendered inline — always hide separate section
+    document.getElementById('seo-entities-group').style.display = 'none';
+
+    if (allKws.length || entities.length) {
+      kwPoolLabel.style.display = 'none';
       const kpL    = (page.key_phrase || '').toLowerCase().trim();
       const relSet = new Set(relTerms.map(t => t.toLowerCase().trim()));
       const vol    = sig.key_phrase_volume;
-      kwPoolLabel.textContent = 'Pool keyword (' + allKws.length + ' valutate)';
 
-      // Keyphrase first (with vol badge), then remaining keywords
-      const kpTag  = kpL ? `<span class="kw-tag keyphrase" title="key phrase principale">${esc(page.key_phrase || '')}</span>` +
-                            (vol ? `<span class="kw-vol-badge">${vol.toLocaleString('it-IT')} vol/mese</span>` : '') + ' ' : '';
-      const otherKws = allKws.filter(kw => kw.toLowerCase().trim() !== kpL);
-      const selTags  = otherKws.filter(kw => relSet.has(kw.toLowerCase().trim())).map(kw => {
+      // 1. Keyphrase section
+      const kpInCopy = kpL && kpL.length >= 3 && copyText.includes(kpL);
+      const kpSection = kpL ? `
+        <div class="seo-group-label" style="margin-top:0">Key phrase${vol ? ' · ' + vol.toLocaleString('it-IT') + ' vol/mese' : ''}</div>
+        <div class="seo-tags" style="margin-bottom:8px">
+          <span class="kw-tag keyphrase${kpInCopy ? ' in-copy' : ''}" title="key phrase principale">${esc(page.key_phrase || '')}</span>
+        </div>` : '';
+
+      // 2. Related terms section
+      const otherKws  = allKws.filter(kw => kw.toLowerCase().trim() !== kpL);
+      const selKws    = otherKws.filter(kw => relSet.has(kw.toLowerCase().trim()));
+      const poolKws   = otherKws.filter(kw => !relSet.has(kw.toLowerCase().trim()));
+      const selInCt   = selKws.filter(kw => copyText.includes(kw.toLowerCase().trim())).length;
+      const selTagsHtml = selKws.map(kw => {
         const kwL    = kw.toLowerCase().trim();
         const inCopy = kwL.length >= 3 && copyText.includes(kwL);
         const title  = inCopy ? 'presente nel copy' : 'related term — non trovato nel copy';
         return `<span class="kw-tag selected${inCopy ? ' in-copy' : ' missing'}" title="${title}">${esc(kw)}</span>`;
       }).join(' ');
-      const poolTagsHtml = otherKws.filter(kw => !relSet.has(kw.toLowerCase().trim())).map(kw => {
+      const relSection = selKws.length ? `
+        <div class="seo-group-label">Related terms selezionati — ${selInCt}/${selKws.length} nel testo</div>
+        <div class="seo-tags">${selTagsHtml}</div>` : '';
+
+      // 3. Key entities section (inline)
+      const entSection = entities.length ? `
+        <div class="seo-group-label" style="margin-top:10px">Concetti chiave di settore</div>
+        <div class="seo-tags">${entities.map(e => {
+          const eL = e.toLowerCase().trim();
+          const inCopy = eL.length >= 3 && copyText.includes(eL);
+          return `<span class="kw-tag entity${inCopy ? ' in-copy' : ''}" title="${inCopy ? 'presente nel copy' : 'non trovato nel copy'}">${esc(e)}</span>`;
+        }).join(' ')}</div>` : '';
+
+      // 4. Pool section (no border divider)
+      const poolTagsHtml = poolKws.map(kw => {
         const kwL    = kw.toLowerCase().trim();
         const inCopy = kwL.length >= 3 && copyText.includes(kwL);
         const title  = inCopy ? 'presente nel copy (pool)' : 'nel pool, non selezionato';
         return `<span class="kw-tag pool${inCopy ? ' in-copy' : ''}" title="${title}">${esc(kw)}</span>`;
       }).join(' ');
-      const dividerHtml = poolTagsHtml ? `<span class="kw-pool-divider">Pool — altre keyword ricercate</span>` : '';
-      kwPoolTags.innerHTML = kpTag + selTags + dividerHtml + poolTagsHtml;
+      const poolSection = poolKws.length ? `
+        <div class="kw-pool-divider">Pool completo — altre ${poolKws.length} keyword ricercate</div>
+        <div class="seo-tags">${poolTagsHtml}</div>` : '';
+
+      kwPoolTags.innerHTML = kpSection + relSection + entSection + poolSection;
       kwPoolGroup.style.display = '';
     } else { kwPoolGroup.style.display = 'none'; }
-
-    // ── Key entities ───────────────────────────────────────────────────────
-    const entities      = sig.key_entities || [];
-    const entitiesGroup = document.getElementById('seo-entities-group');
-    const entitiesTags  = document.getElementById('seo-entities-tags');
-    if (entities.length) {
-      entitiesTags.innerHTML = entities.map(e => {
-        const eL     = e.toLowerCase().trim();
-        const inCopy = eL.length >= 3 && copyText.includes(eL);
-        return `<span class="kw-tag entity${inCopy ? ' in-copy' : ''}" title="${inCopy ? 'presente nel copy' : 'non trovato nel copy'}">${esc(e)}</span>`;
-      }).join(' ');
-      entitiesGroup.style.display = '';
-    } else { entitiesGroup.style.display = 'none'; }
 
     // ── PAA + FAQ angles — 2 colonne ──────────────────────────────────────
     const paaAnglesGroup = document.getElementById('seo-paa-angles-group');
@@ -10499,11 +10519,11 @@
     if (paa.length || faqAngles.length) {
       paaList.innerHTML = paa.map(q => {
         const used = isUsedInFaq(q);
-        return `<li class="${used ? 'item-used' : 'item-unused'}">${esc(q)}</li>`;
+        return `<li class="${used ? 'item-used' : 'item-unused'}"><span class="paa-text">${esc(q)}</span></li>`;
       }).join('');
       faqAnglesList.innerHTML = faqAngles.map(q => {
         const used = isUsedInFaq(q);
-        return `<li class="${used ? 'item-used' : 'item-unused'}">${esc(q)}</li>`;
+        return `<li class="${used ? 'item-used' : 'item-unused'}"><span class="paa-text">${esc(q)}</span></li>`;
       }).join('');
       paaAnglesGroup.style.display = '';
     } else { paaAnglesGroup.style.display = 'none'; }
