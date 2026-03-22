@@ -130,6 +130,22 @@
     .seo-tags { display: flex; flex-wrap: wrap; gap: 5px; }
     .seo-tag { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 12px; background: rgba(131,111,255,0.1); color: var(--c4); }
     .seo-tag.entity { background: rgba(204,255,51,0.35); }
+    /* ── Keyword pool three-tier tags ── */
+    .kw-tag { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; cursor: default; }
+    .kw-tag.pool     { background: rgba(33,25,81,0.07); color: var(--c3); }
+    .kw-tag.selected { background: rgba(255,214,0,0.38); color: #7a4e08; font-weight: 600; }
+    .kw-tag.used     { background: rgba(255,138,0,0.30); color: #7a3000; font-weight: 700; }
+    .kw-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+    .kw-legend-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--c3); }
+    /* ── SEO metadata orange box ── */
+    .seo-meta-box { background: #fff4e6; border: 1.5px solid #e6820a; border-radius: 18px; padding: 16px 20px; }
+    .seo-meta-box h4 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #7a3e00; }
+    .seo-meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+    .seo-meta-field { background: #fff; border: 1px solid rgba(230,130,10,0.3); border-radius: 10px; padding: 10px 14px; }
+    .seo-meta-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #7a3e00; margin-bottom: 4px; }
+    .seo-meta-value { font-size: 14px; color: var(--c4); line-height: 1.5; min-height: 22px; }
+    /* ── Alerts wrap layout ── */
+    .alerts-wrap { max-width: var(--max); margin: 16px auto 0; padding: 0 20px; display: grid; gap: 10px; }
     .seo-paa { font-size: 12px; color: var(--c3); line-height: 1.6; margin: 0; padding: 0; list-style: none; }
     .seo-paa li::before { content: "↳ "; color: var(--c2); }
     .contact-block { position: relative; background: linear-gradient(135deg,rgba(204,255,51,0.26),rgba(131,111,255,0.08)); border-radius: 30px; border: 1px solid rgba(33,25,81,0.08); padding: 28px; }
@@ -171,60 +187,105 @@
     </div>
   </header>
 
-  <!-- ══ WARNINGS / EXTRAS BOX ══ -->
-  <div class="alerts-wrap" id="alerts-wrap" style="display:none">
-    <div class="alerts-box">
-      <div id="warnings-section" style="display:none">
-        <h4>⚠ Validation warnings</h4>
-        <ul class="warning-list" id="warnings-list"></ul>
-      </div>
-      <div id="extras-section" style="display:none">
-        <h4>💡 Sezioni aggiuntive suggerite</h4>
-        <p style="font-size:13px;color:#7a4e08;margin:0 0 10px">Attiva il toggle per includere una sezione nella pagina. Il copy è editabile.</p>
-        <div class="extras-list" id="extras-list"></div>
-      </div>
-      <div id="seo-signals-section" style="display:none">
-        <div class="seo-panel">
-          <div class="seo-panel-header" onclick="toggleSeoPanel()">
-            <span>📊</span><span>Segnali SEO usati per questa pagina</span><span id="seo-panel-chev" style="margin-left:auto;font-size:12px;color:var(--c3);transition:transform .2s">▼</span>
+  <!-- ══ TOP BOXES (SEO signals + meta bundle + warnings) ══ -->
+  <div class="alerts-wrap" id="alerts-wrap">
+
+    <!-- 1. SEO signals — gray, collapsible -->
+    <div id="seo-signals-section" style="display:none">
+      <div class="seo-panel">
+        <div class="seo-panel-header" onclick="toggleSeoPanel()">
+          <span>📊</span><span>Segnali SEO usati per questa pagina</span><span id="seo-panel-chev" style="margin-left:auto;font-size:12px;color:var(--c3);transition:transform .2s">▼</span>
+        </div>
+        <div class="seo-panel-body" id="seo-panel-body">
+          <!-- Keyword pool: three-tier (gray=pool / yellow=selected / orange=in copy) -->
+          <div class="seo-group" id="seo-kw-pool-group" style="display:none">
+            <div class="seo-group-label">Pool keyword ricercate dall'agente</div>
+            <div class="kw-legend">
+              <span class="kw-legend-item"><span class="kw-tag pool">grigio</span> trovata ma non selezionata</span>
+              <span class="kw-legend-item"><span class="kw-tag selected">giallo</span> selezionata nel workflow</span>
+              <span class="kw-legend-item"><span class="kw-tag used">arancione</span> presente nel copy</span>
+            </div>
+            <div class="seo-tags" id="seo-kw-pool-tags"></div>
           </div>
-          <div class="seo-panel-body" id="seo-panel-body">
-            <div class="seo-group" id="seo-key-phrase-group" style="display:none">
-              <div class="seo-group-label">Key phrase <span id="seo-volume-badge" style="display:none;margin-left:8px;font-size:11px;font-weight:400;color:var(--c3)">(<span id="seo-volume-value"></span> vol/mese)</span></div>
-              <div class="seo-tags" id="seo-key-phrase-tags"></div>
-            </div>
-            <div class="seo-group" id="seo-related-group" style="display:none">
-              <div class="seo-group-label">Related terms <span style="font-weight:400;color:var(--c3)">(vocabolario semantico — <span class="seo-tag" style="font-size:11px">esempio</span>)</span></div>
-              <div class="seo-tags" id="seo-related-tags"></div>
-            </div>
-            <div class="seo-group" id="seo-entities-group" style="display:none">
-              <div class="seo-group-label">Key entities <span style="font-weight:400;color:var(--c3)">(dalla SERP — <span class="seo-tag entity" style="font-size:11px">esempio</span>)</span></div>
-              <div class="seo-tags" id="seo-entities-tags"></div>
-            </div>
-            <div class="seo-group" id="seo-paa-group" style="display:none">
-              <div class="seo-group-label">People Also Ask (da Google)</div>
-              <ul class="seo-paa" id="seo-paa-list"></ul>
-            </div>
-            <div class="seo-group" id="seo-angle-group" style="display:none">
-              <div class="seo-group-label">Angolo competitivo unico</div>
-              <p style="font-size:12px;color:var(--c3);margin:0" id="seo-angle-text"></p>
-            </div>
-            <div class="seo-group" id="seo-answer-first-group" style="display:none">
-              <div class="seo-group-label">Paragrafo introduttivo GEO <span style="font-weight:400;color:var(--c3)">(va nella prima sezione contenuto, non nell'hero)</span></div>
-              <p style="font-size:12px;color:var(--c3);margin:0;font-style:italic;line-height:1.5" id="seo-answer-first-text"></p>
-            </div>
-            <div class="seo-group" id="seo-faq-angles-group" style="display:none">
-              <div class="seo-group-label">Angoli FAQ suggeriti (da competitive intel)</div>
-              <ul class="seo-paa" id="seo-faq-angles-list"></ul>
-            </div>
-            <div class="seo-group" id="seo-kw-stats-group" style="display:none">
-              <div class="seo-group-label">Ricerca keyword — riepilogo agente</div>
-              <div id="seo-kw-stats-text" style="font-size:12px;color:var(--c3);line-height:1.8"></div>
-            </div>
+          <div class="seo-group" id="seo-key-phrase-group" style="display:none">
+            <div class="seo-group-label">Key phrase <span id="seo-volume-badge" style="display:none;margin-left:8px;font-size:11px;font-weight:400;color:var(--c3)">(<span id="seo-volume-value"></span> vol/mese)</span></div>
+            <div class="seo-tags" id="seo-key-phrase-tags"></div>
+          </div>
+          <div class="seo-group" id="seo-related-group" style="display:none">
+            <div class="seo-group-label">Related terms selezionati <span style="font-weight:400;color:var(--c3)">(portati avanti nel workflow)</span></div>
+            <div class="seo-tags" id="seo-related-tags"></div>
+          </div>
+          <div class="seo-group" id="seo-entities-group" style="display:none">
+            <div class="seo-group-label">Key entities <span style="font-weight:400;color:var(--c3)">(dalla SERP — <span class="seo-tag entity" style="font-size:11px">esempio</span>)</span></div>
+            <div class="seo-tags" id="seo-entities-tags"></div>
+          </div>
+          <div class="seo-group" id="seo-paa-group" style="display:none">
+            <div class="seo-group-label">People Also Ask (da Google)</div>
+            <ul class="seo-paa" id="seo-paa-list"></ul>
+          </div>
+          <div class="seo-group" id="seo-angle-group" style="display:none">
+            <div class="seo-group-label">Angolo competitivo unico</div>
+            <p style="font-size:12px;color:var(--c3);margin:0" id="seo-angle-text"></p>
+          </div>
+          <div class="seo-group" id="seo-answer-first-group" style="display:none">
+            <div class="seo-group-label">Paragrafo introduttivo GEO <span style="font-weight:400;color:var(--c3)">(va nella prima sezione contenuto, non nell'hero)</span></div>
+            <p style="font-size:12px;color:var(--c3);margin:0;font-style:italic;line-height:1.5" id="seo-answer-first-text"></p>
+          </div>
+          <div class="seo-group" id="seo-faq-angles-group" style="display:none">
+            <div class="seo-group-label">Angoli FAQ suggeriti (da competitive intel)</div>
+            <ul class="seo-paa" id="seo-faq-angles-list"></ul>
+          </div>
+          <div class="seo-group" id="seo-kw-stats-group" style="display:none">
+            <div class="seo-group-label">Ricerca keyword — riepilogo agente</div>
+            <div id="seo-kw-stats-text" style="font-size:12px;color:var(--c3);line-height:1.8"></div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 2. SEO metadata bundle — orange box (moved from bottom) -->
+    <div id="seo-meta-section">
+      <div class="seo-meta-box">
+        <h4>🔧 Bundle tecnico della pagina — SEO metadata</h4>
+        <div class="seo-meta-grid">
+          <div class="seo-meta-field">
+            <div class="seo-meta-label">Slug</div>
+            <div class="seo-meta-value" id="seo-slug" contenteditable="true" spellcheck="false"></div>
+          </div>
+          <div class="seo-meta-field">
+            <div class="seo-meta-label">Key phrase</div>
+            <div class="seo-meta-value" id="seo-keyphrase" contenteditable="true" spellcheck="false"></div>
+          </div>
+          <div class="seo-meta-field">
+            <div class="seo-meta-label">Meta title</div>
+            <div class="seo-meta-value" id="seo-meta-title" contenteditable="true" spellcheck="false"></div>
+          </div>
+          <div class="seo-meta-field">
+            <div class="seo-meta-label">Meta description</div>
+            <div class="seo-meta-value" id="seo-meta-description" contenteditable="true" spellcheck="false"></div>
+          </div>
+        </div>
+        <p style="margin:10px 0 0;font-size:12px;color:#7a3e00;opacity:0.8">Il JSON-LD verrà generato in batch dopo la review di tutte le pagine.</p>
+      </div>
+    </div>
+
+    <!-- 3. Validation warnings — yellow box -->
+    <div id="warnings-section" style="display:none">
+      <div class="alerts-box">
+        <h4>⚠ Validation warnings</h4>
+        <ul class="warning-list" id="warnings-list"></ul>
+      </div>
+    </div>
+
+    <!-- 4. Suggested extras — yellow box -->
+    <div id="extras-section" style="display:none">
+      <div class="alerts-box">
+        <h4>💡 Sezioni aggiuntive suggerite</h4>
+        <p style="font-size:13px;color:#7a4e08;margin:0 0 10px">Attiva il toggle per includere una sezione nella pagina. Il copy è editabile.</p>
+        <div class="extras-list" id="extras-list"></div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ══ HERO ══ -->
@@ -355,22 +416,6 @@
           <a class="cta cta-secondary" href="#">Scarica la scheda</a>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ══ SEO AREA ══ -->
-  <section class="seo-area">
-    <div class="container" style="padding-top:38px;padding-bottom:42px">
-      <div class="section-head">
-        <div><div class="section-kicker">SEO metadata</div><h2 style="font-size:42px">Bundle tecnico della pagina</h2></div>
-      </div>
-      <div class="seo-grid">
-        <div class="seo-card"><h3>Slug</h3><div class="seo-value" id="seo-slug" contenteditable="true" spellcheck="false"></div></div>
-        <div class="seo-card"><h3>Key phrase</h3><div class="seo-value" id="seo-keyphrase" contenteditable="true" spellcheck="false"></div></div>
-        <div class="seo-card"><h3>Meta title</h3><div class="seo-value" id="seo-meta-title" contenteditable="true" spellcheck="false"></div></div>
-        <div class="seo-card"><h3>Meta description</h3><div class="seo-value" id="seo-meta-description" contenteditable="true" spellcheck="false"></div></div>
-      </div>
-      <p style="margin-top:16px;font-size:13px;color:var(--c3)">Il JSON-LD verrà generato in batch dopo la review di tutte le pagine.</p>
     </div>
   </section>
 
@@ -10244,7 +10289,6 @@
 
   // ── Warnings & Extras box ──
   function buildAlertsBox(warnings, extras) {
-    const wrap = document.getElementById('alerts-wrap');
     const warnSec = document.getElementById('warnings-section');
     const warnList = document.getElementById('warnings-list');
     const extrasSec = document.getElementById('extras-section');
@@ -10255,9 +10299,6 @@
 
     const hasWarnings = warnings && warnings.length > 0;
     const hasExtras = extras && extras.length > 0;
-
-    // Always show wrap — SEO signals panel may need it even without warnings/extras
-    wrap.style.display = '';
 
     if (hasWarnings) {
       warnSec.style.display = '';
@@ -10343,17 +10384,35 @@
     const sig = page.seo_signals || {};
     const terms = page.seo_terms || [];
     const section = document.getElementById('seo-signals-section');
-
-    if (!terms.length && !sig.paa_questions?.length) {
-      section.style.display = 'none';
-      // If no warnings either, hide the entire yellow box
-      const warnSec = document.getElementById('warnings-section');
-      if (warnSec.style.display === 'none') {
-        document.getElementById('alerts-wrap').style.display = 'none';
-      }
-      return;
-    }
     section.style.display = '';
+
+    // ── Keyword pool: three-tier (gray=pool / yellow=selected / orange=in copy) ──
+    const allKws = sig.all_keywords || [];
+    const kwPoolGroup = document.getElementById('seo-kw-pool-group');
+    const kwPoolTags  = document.getElementById('seo-kw-pool-tags');
+    if (allKws.length) {
+      // Build set of selected terms (key_phrase + related_terms)
+      const selectedSet = new Set([page.key_phrase, ...(sig.related_terms || [])].map(t => (t||'').toLowerCase().trim()).filter(Boolean));
+      // Build full copy text for mechanical check
+      const cs = page.copy?.copy_sections || {};
+      const copyParts = [];
+      const walkCopy = (obj) => {
+        if (typeof obj === 'string') copyParts.push(obj);
+        else if (Array.isArray(obj)) obj.forEach(walkCopy);
+        else if (obj && typeof obj === 'object') Object.values(obj).forEach(walkCopy);
+      };
+      walkCopy(cs);
+      const copyText = copyParts.join(' ').toLowerCase();
+
+      kwPoolTags.innerHTML = allKws.map(kw => {
+        const kwL = kw.toLowerCase().trim();
+        const inCopy     = kwL.length >= 3 && copyText.includes(kwL);
+        const isSelected = selectedSet.has(kwL);
+        const cls = inCopy ? 'kw-tag used' : isSelected ? 'kw-tag selected' : 'kw-tag pool';
+        return `<span class="${cls}">${esc(kw)}</span>`;
+      }).join(' ');
+      kwPoolGroup.style.display = '';
+    } else { kwPoolGroup.style.display = 'none'; }
 
     // Key phrase
     const kpGroup = document.getElementById('seo-key-phrase-group');
