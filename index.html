@@ -57,11 +57,11 @@
     .alerts-box.info-only h4 { color: var(--c3); }
     .warning-list { margin: 0; padding: 0 0 0 16px; color: #7a4e08; font-size: 14px; line-height: 1.7; }
     .warning-list li.warn-info { color: var(--c3); list-style-type: "ℹ  "; }
-    /* SEO coverage stat */
-    .seo-coverage { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
-    .seo-coverage.good { color: var(--c2); }
-    .seo-coverage.mid  { color: #d97706; }
-    .seo-coverage.low  { color: #dc2626; }
+    /* ── Coverage badge (inline in panel header) ── */
+    .seo-coverage-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: rgba(33,25,81,0.06); color: var(--c4); border: 1.5px solid rgba(33,25,81,0.18); }
+    .seo-coverage-badge.good { border-color: #16a34a; color: #15803d; }
+    .seo-coverage-badge.mid  { border-color: #d97706; color: #b45309; }
+    .seo-coverage-badge.low  { border-color: #dc2626; color: #dc2626; }
     /* Missing related_terms: red border */
     .kw-tag.missing { box-shadow: 0 0 0 2px #dc2626; }
     /* Internal links suggestion box */
@@ -148,20 +148,24 @@
     .seo-tags { display: flex; flex-wrap: wrap; gap: 5px; }
     .seo-tag { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 12px; background: rgba(131,111,255,0.1); color: var(--c4); }
     .seo-tag.entity { background: rgba(204,255,51,0.35); }
-    /* ── Keyword pool three-tier tags ── */
-    .kw-tag { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; cursor: default; }
-    .kw-tag.pool      { background: rgba(33,25,81,0.07); color: var(--c3); }
-    .kw-tag.selected  { background: rgba(255,214,0,0.38); color: #7a4e08; font-weight: 600; }
-    .kw-tag.keyphrase { background: rgba(131,111,255,0.18); color: #3d1fa3; font-weight: 700; border: 1.5px solid rgba(131,111,255,0.5); }
-    .kw-tag.in-copy   { text-decoration: underline; text-decoration-color: rgba(255,138,0,0.7); text-decoration-thickness: 2px; text-underline-offset: 2px; }
-    .kw-tag.entity          { background: rgba(14,165,233,0.14); color: #0c4a6e; }
-    .kw-tag.entity.in-copy  { text-decoration: none; background: rgba(255,138,0,0.22); color: #92400e; font-weight: 600; }
-    .kw-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
-    .kw-legend-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--c3); }
-    /* ── PAA / FAQ angles used indicator ── */
-    .seo-paa li.item-used { color: var(--c4); font-weight: 600; }
-    .seo-paa li.item-used::before { content: "✓ "; color: #16a34a; font-weight: 700; }
-    .seo-paa li.item-unused::before { content: "↳ "; color: var(--c2); }
+    /* ── Keyword pool tags — tutti grigi, bordo varia per tier ── */
+    .kw-tag { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; cursor: default; background: rgba(33,25,81,0.06); color: var(--c4); border: 1.5px solid rgba(33,25,81,0.13); }
+    .kw-tag.keyphrase { border-color: rgba(131,111,255,0.65); font-weight: 600; }
+    .kw-tag.selected  { border-color: rgba(204,255,51,0.9); }
+    .kw-tag.in-copy   { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
+    .kw-tag.entity    { border-color: rgba(131,111,255,0.55); }
+    .kw-tag.entity.in-copy { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
+    .kw-tag.missing   { box-shadow: 0 0 0 1.5px #dc2626; border-color: transparent; }
+    /* keyphrase vol badge */
+    .kw-vol-badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; background: rgba(33,25,81,0.06); color: var(--c3); border: 1.5px solid rgba(131,111,255,0.3); }
+    /* ── PAA / FAQ angles — 2 colonne, pallino grigio/arancione ── */
+    .seo-paa-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .seo-paa-col-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c3); margin-bottom: 6px; }
+    .seo-paa { margin: 0; padding: 0; list-style: none; }
+    .seo-paa li { padding: 3px 0 3px 16px; position: relative; font-size: 12px; color: var(--c3); line-height: 1.5; }
+    .seo-paa li::before { content: "●"; position: absolute; left: 0; top: 6px; font-size: 6px; color: var(--c5); }
+    .seo-paa li.item-used { color: var(--c4); font-weight: 700; background: rgba(255,138,0,0.14); border-radius: 6px; padding-right: 6px; }
+    .seo-paa li.item-used::before { color: #ff8a00; }
     /* ── SEO metadata orange box ── */
     .seo-meta-box { background: #fff4e6; border: 1.5px solid #e6820a; border-radius: 18px; padding: 16px 20px; }
     .seo-meta-box h4 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #7a3e00; }
@@ -218,41 +222,33 @@
     <div id="seo-signals-section" style="display:none">
       <div class="seo-panel">
         <div class="seo-panel-header" onclick="toggleSeoPanel()">
-          <span>📊</span><span>Segnali SEO usati per questa pagina</span><span id="seo-panel-chev" style="margin-left:auto;font-size:12px;color:var(--c3);transition:transform .2s">▼</span>
+          <span>📊</span><span>Segnali SEO usati per questa pagina</span>
+          <span id="seo-coverage-badge" style="margin-left:10px"></span>
+          <span id="seo-panel-chev" style="margin-left:auto;font-size:12px;color:var(--c3);transition:transform .2s">▲</span>
         </div>
-        <div class="seo-panel-body" id="seo-panel-body">
-          <!-- SEO coverage stat -->
-          <div id="seo-coverage-stat" style="display:none"></div>
-          <!-- Keyword pool: three-tier (gray=pool / yellow=related / blue=keyphrase) + underline=in copy -->
+        <div class="seo-panel-body open" id="seo-panel-body">
+          <!-- Keyword pool -->
           <div class="seo-group" id="seo-kw-pool-group" style="display:none">
             <div class="seo-group-label" id="seo-kw-pool-label">Pool keyword ricercate dall'agente</div>
-            <div class="kw-legend">
-              <span class="kw-legend-item"><span class="kw-tag keyphrase">blu</span> key phrase principale</span>
-              <span class="kw-legend-item"><span class="kw-tag selected">giallo</span> related term selezionato</span>
-              <span class="kw-legend-item"><span class="kw-tag pool">grigio</span> nel pool, non selezionata</span>
-              <span class="kw-legend-item"><span class="kw-tag pool in-copy">sottolineato</span> presente nel copy</span>
-              <span class="kw-legend-item"><span class="kw-tag selected missing">bordo rosso</span> related term mancante nel copy</span>
-            </div>
             <div class="seo-tags" id="seo-kw-pool-tags"></div>
           </div>
-          <!-- Key entities: industry concepts bolded in copy -->
+          <!-- Key entities -->
           <div class="seo-group" id="seo-entities-group" style="display:none">
-            <div class="seo-group-label">Concetti chiave di settore <span style="font-weight:400;color:var(--c3)">— evidenziati nel copy, non rimuovere in editing</span></div>
-            <div class="kw-legend">
-              <span class="kw-legend-item"><span class="kw-tag entity">blu</span> concetto di settore</span>
-              <span class="kw-legend-item"><span class="kw-tag entity in-copy">arancione</span> presente nel copy</span>
-            </div>
+            <div class="seo-group-label">Concetti chiave di settore <span style="font-weight:400;color:var(--c3)">— non rimuovere in editing</span></div>
             <div class="seo-tags" id="seo-entities-tags"></div>
           </div>
-          <!-- PAA questions with used/unused indicator -->
-          <div class="seo-group" id="seo-paa-group" style="display:none">
-            <div class="seo-group-label">People Also Ask da Google <span style="font-weight:400;color:var(--c3)">— ✓ usata come FAQ nel copy</span></div>
-            <ul class="seo-paa" id="seo-paa-list"></ul>
-          </div>
-          <!-- FAQ angles from competitive intel with used/unused indicator -->
-          <div class="seo-group" id="seo-faq-angles-group" style="display:none">
-            <div class="seo-group-label">Angoli FAQ da competitive intel <span style="font-weight:400;color:var(--c3)">— ✓ usato come FAQ nel copy</span></div>
-            <ul class="seo-paa" id="seo-faq-angles-list"></ul>
+          <!-- PAA + FAQ angles side by side -->
+          <div class="seo-group" id="seo-paa-angles-group" style="display:none">
+            <div class="seo-paa-cols">
+              <div>
+                <div class="seo-paa-col-head">People Also Ask da Google</div>
+                <ul class="seo-paa" id="seo-paa-list"></ul>
+              </div>
+              <div>
+                <div class="seo-paa-col-head">Angoli FAQ da competitive intel</div>
+                <ul class="seo-paa" id="seo-faq-angles-list"></ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -10438,20 +10434,19 @@
       return faqQs.some(fq => words.filter(w => fq.includes(w)).length >= 3);
     };
 
-    // ── SEO coverage stat ──────────────────────────────────────────────────
-    const covStat = document.getElementById('seo-coverage-stat');
-    const relTerms = sig.related_terms || [];
+    // ── Coverage badge in header ───────────────────────────────────────────
+    const relTerms   = sig.related_terms || [];
+    const covBadge   = document.getElementById('seo-coverage-badge');
     if (relTerms.length) {
       const covFound = relTerms.filter(t => copyText.includes(t.toLowerCase().trim())).length;
       const covTotal = relTerms.length;
       const covPct   = Math.round(100 * covFound / covTotal);
       const covClass = covPct >= 80 ? 'good' : covPct >= 60 ? 'mid' : 'low';
-      covStat.innerHTML = `<span class="seo-coverage ${covClass}">Copertura SEO: ${covFound}/${covTotal} related terms (${covPct}%)</span>`;
-      covStat.style.display = '';
-    } else { covStat.style.display = 'none'; }
+      covBadge.innerHTML = `<span class="seo-coverage-badge ${covClass}">Copertura SEO: ${covFound}/${covTotal} (${covPct}%)</span>`;
+    } else { covBadge.innerHTML = ''; }
 
     // ── Keyword pool ───────────────────────────────────────────────────────
-    const allKws = sig.all_keywords || [];
+    const allKws      = sig.all_keywords || [];
     const kwPoolGroup = document.getElementById('seo-kw-pool-group');
     const kwPoolTags  = document.getElementById('seo-kw-pool-tags');
     const kwPoolLabel = document.getElementById('seo-kw-pool-label');
@@ -10459,65 +10454,59 @@
       const kpL    = (page.key_phrase || '').toLowerCase().trim();
       const relSet = new Set(relTerms.map(t => t.toLowerCase().trim()));
       const vol    = sig.key_phrase_volume;
-      kwPoolLabel.innerHTML = 'Pool keyword (' + allKws.length + ' valutate)' +
-        (vol ? ' &nbsp;·&nbsp; <span style="font-weight:400;color:var(--c3)">key phrase: <b>' + vol.toLocaleString('it-IT') + '</b> vol/mese</span>' : '');
+      kwPoolLabel.textContent = 'Pool keyword (' + allKws.length + ' valutate)';
 
-      kwPoolTags.innerHTML = allKws.map(kw => {
-        const kwL = kw.toLowerCase().trim();
-        const inCopy = kwL.length >= 3 && copyText.includes(kwL);
-        let tier;
-        if (kwL === kpL) tier = 'keyphrase';
-        else if (relSet.has(kwL)) tier = 'selected';
-        else tier = 'pool';
-        const inCopyClass = inCopy ? ' in-copy' : '';
-        // related_terms not found in copy → red border (missing)
-        const missingClass = (tier === 'selected' && !inCopy) ? ' missing' : '';
-        const title = inCopy ? 'presente nel copy' : (tier === 'selected' ? 'related term — non trovata nel copy' : 'non trovata nel copy');
+      // Keyphrase first (with vol badge), then remaining keywords
+      const kpTag  = kpL ? `<span class="kw-tag keyphrase" title="key phrase principale">${esc(page.key_phrase || '')}</span>` +
+                            (vol ? `<span class="kw-vol-badge">${vol.toLocaleString('it-IT')} vol/mese</span>` : '') + ' ' : '';
+      const restTags = allKws.filter(kw => kw.toLowerCase().trim() !== kpL).map(kw => {
+        const kwL        = kw.toLowerCase().trim();
+        const inCopy     = kwL.length >= 3 && copyText.includes(kwL);
+        const isSelected = relSet.has(kwL);
+        const tier       = isSelected ? 'selected' : 'pool';
+        const inCopyClass  = inCopy ? ' in-copy' : '';
+        const missingClass = (isSelected && !inCopy) ? ' missing' : '';
+        const title = inCopy ? 'presente nel copy' : (isSelected ? 'related term — non trovato nel copy' : 'nel pool, non selezionato');
         return `<span class="kw-tag ${tier}${inCopyClass}${missingClass}" title="${title}">${esc(kw)}</span>`;
       }).join(' ');
+      kwPoolTags.innerHTML = kpTag + restTags;
       kwPoolGroup.style.display = '';
     } else { kwPoolGroup.style.display = 'none'; }
 
     // ── Key entities ───────────────────────────────────────────────────────
-    const entities = sig.key_entities || [];
+    const entities      = sig.key_entities || [];
     const entitiesGroup = document.getElementById('seo-entities-group');
     const entitiesTags  = document.getElementById('seo-entities-tags');
     if (entities.length) {
       entitiesTags.innerHTML = entities.map(e => {
-        const eL = e.toLowerCase().trim();
+        const eL     = e.toLowerCase().trim();
         const inCopy = eL.length >= 3 && copyText.includes(eL);
         return `<span class="kw-tag entity${inCopy ? ' in-copy' : ''}" title="${inCopy ? 'presente nel copy' : 'non trovato nel copy'}">${esc(e)}</span>`;
       }).join(' ');
       entitiesGroup.style.display = '';
     } else { entitiesGroup.style.display = 'none'; }
 
-    // ── PAA questions with used-in-FAQ check ──────────────────────────────
-    const paaGroup = document.getElementById('seo-paa-group');
-    const paaList  = document.getElementById('seo-paa-list');
-    const paa = sig.paa_questions || [];
-    if (paa.length) {
+    // ── PAA + FAQ angles — 2 colonne ──────────────────────────────────────
+    const paaAnglesGroup = document.getElementById('seo-paa-angles-group');
+    const paaList        = document.getElementById('seo-paa-list');
+    const faqAnglesList  = document.getElementById('seo-faq-angles-list');
+    const paa       = sig.paa_questions || [];
+    const faqAngles = sig.faq_angles    || [];
+    if (paa.length || faqAngles.length) {
       paaList.innerHTML = paa.map(q => {
         const used = isUsedInFaq(q);
         return `<li class="${used ? 'item-used' : 'item-unused'}">${esc(q)}</li>`;
       }).join('');
-      paaGroup.style.display = '';
-    } else { paaGroup.style.display = 'none'; }
-
-    // ── FAQ angles with used-in-FAQ check ─────────────────────────────────
-    const faqAnglesGroup = document.getElementById('seo-faq-angles-group');
-    const faqAnglesList  = document.getElementById('seo-faq-angles-list');
-    const faqAngles = sig.faq_angles || [];
-    if (faqAngles.length) {
       faqAnglesList.innerHTML = faqAngles.map(q => {
         const used = isUsedInFaq(q);
         return `<li class="${used ? 'item-used' : 'item-unused'}">${esc(q)}</li>`;
       }).join('');
-      faqAnglesGroup.style.display = '';
-    } else { faqAnglesGroup.style.display = 'none'; }
+      paaAnglesGroup.style.display = '';
+    } else { paaAnglesGroup.style.display = 'none'; }
 
-    // Reset chevron / close panel on page change
-    document.getElementById('seo-panel-body').classList.remove('open');
-    document.getElementById('seo-panel-chev').style.transform = '';
+    // Panel aperto di default, chevron verso l'alto
+    document.getElementById('seo-panel-body').classList.add('open');
+    document.getElementById('seo-panel-chev').style.transform = 'rotate(180deg)';
   }
 
   function toggleExtraBody(i) {
