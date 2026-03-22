@@ -52,8 +52,18 @@
     /* ── Warnings / Extras box ── */
     .alerts-wrap { max-width: var(--max); margin: 16px auto 0; padding: 0 20px; }
     .alerts-box { background: #fffbe6; border: 1.5px solid #e6b800; border-radius: 18px; padding: 18px 22px; display: grid; gap: 14px; }
+    .alerts-box.info-only { background: #f8f8fb; border-color: var(--line); }
     .alerts-box h4 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #92600a; }
+    .alerts-box.info-only h4 { color: var(--c3); }
     .warning-list { margin: 0; padding: 0 0 0 16px; color: #7a4e08; font-size: 14px; line-height: 1.7; }
+    .warning-list li.warn-info { color: var(--c3); list-style-type: "ℹ  "; }
+    /* SEO coverage stat */
+    .seo-coverage { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    .seo-coverage.good { color: var(--c2); }
+    .seo-coverage.mid  { color: #d97706; }
+    .seo-coverage.low  { color: #dc2626; }
+    /* Missing related_terms: red border */
+    .kw-tag.missing { box-shadow: 0 0 0 2px #dc2626; }
     .extras-list { display: grid; gap: 10px; }
     .extra-item { background: rgba(255,255,255,0.72); border: 1px solid #e6b800; border-radius: 12px; overflow: hidden; }
     .extra-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; }
@@ -203,6 +213,8 @@
           <span>📊</span><span>Segnali SEO usati per questa pagina</span><span id="seo-panel-chev" style="margin-left:auto;font-size:12px;color:var(--c3);transition:transform .2s">▼</span>
         </div>
         <div class="seo-panel-body" id="seo-panel-body">
+          <!-- SEO coverage stat -->
+          <div id="seo-coverage-stat" style="display:none"></div>
           <!-- Keyword pool: three-tier (gray=pool / yellow=related / blue=keyphrase) + underline=in copy -->
           <div class="seo-group" id="seo-kw-pool-group" style="display:none">
             <div class="seo-group-label" id="seo-kw-pool-label">Pool keyword ricercate dall'agente</div>
@@ -211,6 +223,7 @@
               <span class="kw-legend-item"><span class="kw-tag selected">giallo</span> related term selezionato</span>
               <span class="kw-legend-item"><span class="kw-tag pool">grigio</span> nel pool, non selezionata</span>
               <span class="kw-legend-item"><span class="kw-tag pool in-copy">sottolineato</span> presente nel copy</span>
+              <span class="kw-legend-item"><span class="kw-tag selected missing">bordo rosso</span> related term mancante nel copy</span>
             </div>
             <div class="seo-tags" id="seo-kw-pool-tags"></div>
           </div>
@@ -10279,7 +10292,9 @@
 
   // ── Warnings & Extras box ──
   function buildAlertsBox(warnings, extras) {
-    const warnSec = document.getElementById('warnings-section');
+    const warnSec  = document.getElementById('warnings-section');
+    const warnBox  = warnSec.querySelector('.alerts-box');
+    const warnHead = warnSec.querySelector('h4');
     const warnList = document.getElementById('warnings-list');
     const extrasSec = document.getElementById('extras-section');
     const extrasList = document.getElementById('extras-list');
@@ -10287,13 +10302,49 @@
     warnList.innerHTML = '';
     extrasList.innerHTML = '';
 
-    const hasWarnings = warnings && warnings.length > 0;
+    // ── Classify each warning ──────────────────────────────────────────────
+    const shouldSuppress = (w) => {
+      if (/^SEO_COVERAGE[_:]/.test(w))             return true;  // moved to SEO panel
+      if (/^SEO_MISSING_TERMS:/.test(w))           return true;  // shown as red border in pool
+      if (/^POST_FIX_SEO:/.test(w))               return true;  // not actionable
+      if (/^SUBTITLE_SLIGHTLY_OFF:/.test(w))       return true;  // duplicate of subtitle char warning
+      if (/^H1 is only \d+ words/.test(w))         return true;  // word-based false positive
+      if (/^SEO: key_phrase not in H1/.test(w))   return true;  // informational only
+      // Subtitle ≤215c: not worth flagging (15c tolerance)
+      const subM = w.match(/^subtitle is (\d+) chars/);
+      if (subM && parseInt(subM[1]) <= 215)        return true;
+      // H1 ≤65c: not worth flagging (5c tolerance)
+      const h1M = w.match(/H1[_\s](?:is\s+)?(\d+)\s*chars/i);
+      if (h1M && parseInt(h1M[1]) <= 65)           return true;
+      return false;
+    };
+    const isInfo = (w) =>
+      /^FIXER_APPLIED:/.test(w) || /^MANUALLY_/.test(w);
+
+    const realWarnings = (warnings || []).filter(w => !shouldSuppress(w) && !isInfo(w));
+    const infoItems    = (warnings || []).filter(w => !shouldSuppress(w) && isInfo(w));
+
+    const hasReal  = realWarnings.length > 0;
+    const hasInfo  = infoItems.length > 0;
     const hasExtras = extras && extras.length > 0;
 
-    if (hasWarnings) {
+    if (hasReal || hasInfo) {
       warnSec.style.display = '';
-      warnings.forEach(w => {
+      if (hasReal) {
+        warnBox.classList.remove('info-only');
+        warnHead.textContent = '⚠ Validation warnings';
+      } else {
+        warnBox.classList.add('info-only');
+        warnHead.textContent = 'ℹ Note';
+      }
+      realWarnings.forEach(w => {
         const li = document.createElement('li');
+        li.textContent = w;
+        warnList.appendChild(li);
+      });
+      infoItems.forEach(w => {
+        const li = document.createElement('li');
+        li.className = 'warn-info';
         li.textContent = w;
         warnList.appendChild(li);
       });
@@ -10395,16 +10446,27 @@
       return faqQs.some(fq => words.filter(w => fq.includes(w)).length >= 3);
     };
 
+    // ── SEO coverage stat ──────────────────────────────────────────────────
+    const covStat = document.getElementById('seo-coverage-stat');
+    const relTerms = sig.related_terms || [];
+    if (relTerms.length) {
+      const covFound = relTerms.filter(t => copyText.includes(t.toLowerCase().trim())).length;
+      const covTotal = relTerms.length;
+      const covPct   = Math.round(100 * covFound / covTotal);
+      const covClass = covPct >= 80 ? 'good' : covPct >= 60 ? 'mid' : 'low';
+      covStat.innerHTML = `<span class="seo-coverage ${covClass}">Copertura SEO: ${covFound}/${covTotal} related terms (${covPct}%)</span>`;
+      covStat.style.display = '';
+    } else { covStat.style.display = 'none'; }
+
     // ── Keyword pool ───────────────────────────────────────────────────────
     const allKws = sig.all_keywords || [];
     const kwPoolGroup = document.getElementById('seo-kw-pool-group');
     const kwPoolTags  = document.getElementById('seo-kw-pool-tags');
     const kwPoolLabel = document.getElementById('seo-kw-pool-label');
     if (allKws.length) {
-      const kpL = (page.key_phrase || '').toLowerCase().trim();
-      const relSet = new Set((sig.related_terms || []).map(t => t.toLowerCase().trim()));
-      // Volume in label
-      const vol = sig.key_phrase_volume;
+      const kpL    = (page.key_phrase || '').toLowerCase().trim();
+      const relSet = new Set(relTerms.map(t => t.toLowerCase().trim()));
+      const vol    = sig.key_phrase_volume;
       kwPoolLabel.innerHTML = 'Pool keyword (' + allKws.length + ' valutate)' +
         (vol ? ' &nbsp;·&nbsp; <span style="font-weight:400;color:var(--c3)">key phrase: <b>' + vol.toLocaleString('it-IT') + '</b> vol/mese</span>' : '');
 
@@ -10416,7 +10478,10 @@
         else if (relSet.has(kwL)) tier = 'selected';
         else tier = 'pool';
         const inCopyClass = inCopy ? ' in-copy' : '';
-        return `<span class="kw-tag ${tier}${inCopyClass}" title="${inCopy ? 'presente nel copy' : 'non trovata nel copy'}">${esc(kw)}</span>`;
+        // related_terms not found in copy → red border (missing)
+        const missingClass = (tier === 'selected' && !inCopy) ? ' missing' : '';
+        const title = inCopy ? 'presente nel copy' : (tier === 'selected' ? 'related term — non trovata nel copy' : 'non trovata nel copy');
+        return `<span class="kw-tag ${tier}${inCopyClass}${missingClass}" title="${title}">${esc(kw)}</span>`;
       }).join(' ');
       kwPoolGroup.style.display = '';
     } else { kwPoolGroup.style.display = 'none'; }
