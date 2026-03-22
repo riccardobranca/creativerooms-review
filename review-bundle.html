@@ -64,6 +64,14 @@
     .seo-coverage.low  { color: #dc2626; }
     /* Missing related_terms: red border */
     .kw-tag.missing { box-shadow: 0 0 0 2px #dc2626; }
+    /* Internal links suggestion box */
+    .ilinks-box { background: #f8f8fb; border: 1.5px solid var(--line); border-radius: 18px; padding: 18px 22px; }
+    .ilinks-box h4 { margin: 0 0 14px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c3); }
+    .ilinks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+    .ilink-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 4px; }
+    .ilink-target { font-size: 15px; font-weight: 700; letter-spacing: -0.03em; color: var(--c4); }
+    .ilink-anchor { font-size: 13px; color: var(--c3); font-style: italic; }
+    .ilink-placement { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; background: rgba(131,111,255,0.1); color: var(--c2); border-radius: 999px; padding: 2px 8px; }
     .extras-list { display: grid; gap: 10px; }
     .extra-item { background: rgba(255,255,255,0.72); border: 1px solid #e6b800; border-radius: 12px; overflow: hidden; }
     .extra-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; }
@@ -367,15 +375,11 @@
     </div>
   </section>
 
-  <!-- ══ RELATED SERVICES placeholder ══ -->
+  <!-- ══ RELATED SERVICES ══ -->
   <section class="section">
     <div class="container">
       <div class="section-head"><div><div class="section-kicker">Servizi correlati</div><h2>Servizi che possono estendere il lavoro</h2></div></div>
-      <div class="placeholder-grid">
-        <article class="placeholder"><span class="tag">Related service</span><h3>Service 01</h3><p>Card servizio correlato.</p></article>
-        <article class="placeholder"><span class="tag">Related service</span><h3>Service 02</h3><p>Card servizio correlato.</p></article>
-        <article class="placeholder"><span class="tag">Related service</span><h3>Service 03</h3><p>Card servizio correlato.</p></article>
-      </div>
+      <div id="related-links-box"></div>
     </div>
   </section>
 
@@ -10585,7 +10589,22 @@
     if (sources.length) {
       sources.forEach((item, i) => srcRoot.appendChild(createSource(item, i)));
     } else {
-      srcRoot.innerHTML = '<div class="source-item"><div class="source-url">Nessuna fonte.</div></div>';
+      srcRoot.innerHTML = '<div class="source-item" style="color:var(--c3);font-size:13px;line-height:1.6">Le fonti trovate nella SERP erano pagine di competitor o non sufficientemente autorevoli — l\'array sources è stato lasciato vuoto di conseguenza.<br>Il developer può aggiungere fonti manualmente se necessario.</div>';
+    }
+
+    // Internal links → Servizi correlati
+    const ilinksBox = document.getElementById('related-links-box');
+    const ilinks = (page.copy?.internal_links || []);
+    if (ilinks.length) {
+      const cards = ilinks.map(l => `
+        <div class="ilink-card">
+          <div class="ilink-target">${esc(l.target_page || '')}</div>
+          <div class="ilink-anchor">"${esc(l.anchor || '')}"</div>
+          <span class="ilink-placement">${esc(l.placement_section || '')}</span>
+        </div>`).join('');
+      ilinksBox.innerHTML = `<div class="ilinks-box"><h4>Suggerimenti internal linking dal workflow</h4><div class="ilinks-grid">${cards}</div></div>`;
+    } else {
+      ilinksBox.innerHTML = '<div class="ilinks-box"><h4>Suggerimenti internal linking dal workflow</h4><p style="color:var(--c3);font-size:13px;margin:0">Nessun internal link generato per questa pagina.</p></div>';
     }
 
     // SEO
