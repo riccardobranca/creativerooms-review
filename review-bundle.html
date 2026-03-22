@@ -10403,7 +10403,7 @@
       let html = esc(text);
       sorted.forEach(term => {
         const re = new RegExp('(' + escRe(esc(term)) + ')', 'gi');
-        html = html.replace(re, '<strong class="seo-term">$1</strong>');
+        html = html.replace(re, '<span class="seo-term">$1</span>');
       });
       el.innerHTML = html;
     });
