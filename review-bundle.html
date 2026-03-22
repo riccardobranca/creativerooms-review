@@ -10318,33 +10318,21 @@
       if (h1M && parseInt(h1M[1]) <= 65)           return true;
       return false;
     };
-    const isInfo = (w) =>
-      /^FIXER_APPLIED:/.test(w) || /^MANUALLY_/.test(w);
+    const realWarnings = (warnings || []).filter(w =>
+      !shouldSuppress(w) &&
+      !/^FIXER_APPLIED:/.test(w) &&
+      !/^MANUALLY_/.test(w)
+    );
 
-    const realWarnings = (warnings || []).filter(w => !shouldSuppress(w) && !isInfo(w));
-    const infoItems    = (warnings || []).filter(w => !shouldSuppress(w) && isInfo(w));
-
-    const hasReal  = realWarnings.length > 0;
-    const hasInfo  = infoItems.length > 0;
+    const hasReal   = realWarnings.length > 0;
     const hasExtras = extras && extras.length > 0;
 
-    if (hasReal || hasInfo) {
+    if (hasReal) {
       warnSec.style.display = '';
-      if (hasReal) {
-        warnBox.classList.remove('info-only');
-        warnHead.textContent = '⚠ Validation warnings';
-      } else {
-        warnBox.classList.add('info-only');
-        warnHead.textContent = 'ℹ Note';
-      }
+      warnBox.classList.remove('info-only');
+      warnHead.textContent = '⚠ Validation warnings';
       realWarnings.forEach(w => {
         const li = document.createElement('li');
-        li.textContent = w;
-        warnList.appendChild(li);
-      });
-      infoItems.forEach(w => {
-        const li = document.createElement('li');
-        li.className = 'warn-info';
         li.textContent = w;
         warnList.appendChild(li);
       });
