@@ -136,6 +136,8 @@
     .kw-tag.selected  { background: rgba(255,214,0,0.38); color: #7a4e08; font-weight: 600; }
     .kw-tag.keyphrase { background: rgba(131,111,255,0.18); color: #3d1fa3; font-weight: 700; border: 1.5px solid rgba(131,111,255,0.5); }
     .kw-tag.in-copy   { text-decoration: underline; text-decoration-color: rgba(255,138,0,0.7); text-decoration-thickness: 2px; text-underline-offset: 2px; }
+    .kw-tag.entity          { background: rgba(14,165,233,0.14); color: #0c4a6e; }
+    .kw-tag.entity.in-copy  { text-decoration: none; background: rgba(255,138,0,0.22); color: #92400e; font-weight: 600; }
     .kw-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
     .kw-legend-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--c3); }
     /* ── PAA / FAQ angles used indicator ── */
@@ -211,6 +213,15 @@
               <span class="kw-legend-item"><span class="kw-tag pool in-copy">sottolineato</span> presente nel copy</span>
             </div>
             <div class="seo-tags" id="seo-kw-pool-tags"></div>
+          </div>
+          <!-- Key entities: industry concepts bolded in copy -->
+          <div class="seo-group" id="seo-entities-group" style="display:none">
+            <div class="seo-group-label">Concetti chiave di settore <span style="font-weight:400;color:var(--c3)">— evidenziati nel copy, non rimuovere in editing</span></div>
+            <div class="kw-legend">
+              <span class="kw-legend-item"><span class="kw-tag entity">blu</span> concetto di settore</span>
+              <span class="kw-legend-item"><span class="kw-tag entity in-copy">arancione</span> presente nel copy</span>
+            </div>
+            <div class="seo-tags" id="seo-entities-tags"></div>
           </div>
           <!-- PAA questions with used/unused indicator -->
           <div class="seo-group" id="seo-paa-group" style="display:none">
@@ -10409,6 +10420,19 @@
       }).join(' ');
       kwPoolGroup.style.display = '';
     } else { kwPoolGroup.style.display = 'none'; }
+
+    // ── Key entities ───────────────────────────────────────────────────────
+    const entities = sig.key_entities || [];
+    const entitiesGroup = document.getElementById('seo-entities-group');
+    const entitiesTags  = document.getElementById('seo-entities-tags');
+    if (entities.length) {
+      entitiesTags.innerHTML = entities.map(e => {
+        const eL = e.toLowerCase().trim();
+        const inCopy = eL.length >= 3 && copyText.includes(eL);
+        return `<span class="kw-tag entity${inCopy ? ' in-copy' : ''}" title="${inCopy ? 'presente nel copy' : 'non trovato nel copy'}">${esc(e)}</span>`;
+      }).join(' ');
+      entitiesGroup.style.display = '';
+    } else { entitiesGroup.style.display = 'none'; }
 
     // ── PAA questions with used-in-FAQ check ──────────────────────────────
     const paaGroup = document.getElementById('seo-paa-group');
