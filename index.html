@@ -62,8 +62,6 @@
     .seo-coverage-badge.good { border-color: #16a34a; color: #15803d; }
     .seo-coverage-badge.mid  { border-color: #d97706; color: #b45309; }
     .seo-coverage-badge.low  { border-color: #dc2626; color: #dc2626; }
-    /* Missing related_terms: red border */
-    .kw-tag.missing { box-shadow: 0 0 0 2px #dc2626; }
     /* Internal links suggestion box */
     .ilinks-box { background: #f8f8fb; border: 1.5px solid var(--line); border-radius: 18px; padding: 18px 22px; }
     .ilinks-box h4 { margin: 0 0 14px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c3); }
@@ -150,12 +148,14 @@
     .seo-tag.entity { background: rgba(204,255,51,0.35); }
     /* ── Keyword pool tags — tutti grigi, bordo varia per tier ── */
     .kw-tag { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; cursor: default; background: rgba(33,25,81,0.06); color: var(--c4); border: 1.5px solid rgba(33,25,81,0.13); }
-    .kw-tag.keyphrase { border-color: rgba(131,111,255,0.65); font-weight: 600; }
-    .kw-tag.selected  { border-color: rgba(204,255,51,0.9); }
+    .kw-tag.keyphrase { border-color: rgba(204,255,51,0.9); font-weight: 700; font-size: 13px; }
     .kw-tag.in-copy   { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
     .kw-tag.entity    { border-color: rgba(131,111,255,0.55); }
     .kw-tag.entity.in-copy { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
-    .kw-tag.missing   { box-shadow: 0 0 0 1.5px #dc2626; border-color: transparent; }
+    .kw-tag.missing   { color: #dc2626; font-weight: 700; border-color: rgba(33,25,81,0.13); }
+    .kw-tag.missing::after { content: " ⚠"; font-size: 10px; }
+    .kw-tag.pool      { font-size: 11px; background: rgba(33,25,81,0.04); color: var(--c5); border-color: transparent; }
+    .kw-pool-divider  { display: block; width: 100%; margin: 7px 0 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c5); border-top: 1px solid var(--line); padding-top: 7px; }
     /* keyphrase vol badge */
     .kw-vol-badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; background: rgba(33,25,81,0.06); color: var(--c3); border: 1.5px solid rgba(131,111,255,0.3); }
     /* ── PAA / FAQ angles — 2 colonne, pallino grigio/arancione ── */
@@ -10459,17 +10459,21 @@
       // Keyphrase first (with vol badge), then remaining keywords
       const kpTag  = kpL ? `<span class="kw-tag keyphrase" title="key phrase principale">${esc(page.key_phrase || '')}</span>` +
                             (vol ? `<span class="kw-vol-badge">${vol.toLocaleString('it-IT')} vol/mese</span>` : '') + ' ' : '';
-      const restTags = allKws.filter(kw => kw.toLowerCase().trim() !== kpL).map(kw => {
-        const kwL        = kw.toLowerCase().trim();
-        const inCopy     = kwL.length >= 3 && copyText.includes(kwL);
-        const isSelected = relSet.has(kwL);
-        const tier       = isSelected ? 'selected' : 'pool';
-        const inCopyClass  = inCopy ? ' in-copy' : '';
-        const missingClass = (isSelected && !inCopy) ? ' missing' : '';
-        const title = inCopy ? 'presente nel copy' : (isSelected ? 'related term — non trovato nel copy' : 'nel pool, non selezionato');
-        return `<span class="kw-tag ${tier}${inCopyClass}${missingClass}" title="${title}">${esc(kw)}</span>`;
+      const otherKws = allKws.filter(kw => kw.toLowerCase().trim() !== kpL);
+      const selTags  = otherKws.filter(kw => relSet.has(kw.toLowerCase().trim())).map(kw => {
+        const kwL    = kw.toLowerCase().trim();
+        const inCopy = kwL.length >= 3 && copyText.includes(kwL);
+        const title  = inCopy ? 'presente nel copy' : 'related term — non trovato nel copy';
+        return `<span class="kw-tag selected${inCopy ? ' in-copy' : ' missing'}" title="${title}">${esc(kw)}</span>`;
       }).join(' ');
-      kwPoolTags.innerHTML = kpTag + restTags;
+      const poolTagsHtml = otherKws.filter(kw => !relSet.has(kw.toLowerCase().trim())).map(kw => {
+        const kwL    = kw.toLowerCase().trim();
+        const inCopy = kwL.length >= 3 && copyText.includes(kwL);
+        const title  = inCopy ? 'presente nel copy (pool)' : 'nel pool, non selezionato';
+        return `<span class="kw-tag pool${inCopy ? ' in-copy' : ''}" title="${title}">${esc(kw)}</span>`;
+      }).join(' ');
+      const dividerHtml = poolTagsHtml ? `<span class="kw-pool-divider">Pool — altre keyword ricercate</span>` : '';
+      kwPoolTags.innerHTML = kpTag + selTags + dividerHtml + poolTagsHtml;
       kwPoolGroup.style.display = '';
     } else { kwPoolGroup.style.display = 'none'; }
 
