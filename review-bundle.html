@@ -151,12 +151,11 @@
     .kw-tag.keyphrase { border: 2px solid rgba(131,111,255,0.65); font-weight: 700; font-size: 13px; }
     .kw-tag.in-copy   { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
     .kw-tag.keyphrase.in-copy { background: rgba(255,138,0,0.22); color: #7a3a00; border-color: rgba(131,111,255,0.65); }
-    .kw-tag.entity    { border-color: rgba(131,111,255,0.55); }
     .kw-tag.entity.in-copy { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
     .kw-tag.missing   { color: #dc2626; font-weight: 700; border-color: rgba(33,25,81,0.13); }
     .kw-tag.missing::after { content: " ⚠"; font-size: 10px; }
     .kw-tag.pool      { font-size: 11px; background: rgba(33,25,81,0.04); color: var(--c5); border-color: transparent; }
-    .kw-tag.pool.in-copy { opacity: .75; }
+    .kw-tag.pool.in-copy  { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; opacity: .75; }
     .kw-pool-divider  { margin: 10px 0 5px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c5); }
     /* keyphrase vol badge */
     .kw-vol-badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; background: rgba(33,25,81,0.06); color: var(--c3); border: 1.5px solid rgba(131,111,255,0.3); }
@@ -226,8 +225,14 @@
       <div class="seo-panel">
         <div class="seo-panel-header" onclick="toggleSeoPanel()">
           <span>📊</span><span>Segnali SEO usati per questa pagina</span>
-          <span id="seo-coverage-badge" style="margin-left:10px"></span>
-          <span id="seo-panel-chev" style="margin-left:auto;font-size:12px;color:var(--c3);transition:transform .2s">▲</span>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:8px;pointer-events:none">
+            <span style="font-size:11px;color:var(--c3);display:flex;align-items:center;gap:6px">
+              <span><span class="kw-tag keyphrase" style="font-size:10px;padding:1px 7px">abc</span> key phrase</span>
+              <span><span class="kw-tag in-copy" style="font-size:10px;padding:1px 7px">abc</span> nel testo</span>
+              <span><span class="kw-tag missing" style="font-size:10px;padding:1px 7px">abc</span> mancante</span>
+            </span>
+            <span id="seo-panel-chev" style="font-size:12px;color:var(--c3);transition:transform .2s;pointer-events:auto">▲</span>
+          </span>
         </div>
         <div class="seo-panel-body open" id="seo-panel-body">
           <!-- Keyword pool -->
@@ -10437,16 +10442,13 @@
       return faqQs.some(fq => words.filter(w => fq.includes(w)).length >= 3);
     };
 
-    // ── Coverage badge in header ───────────────────────────────────────────
+    // ── Coverage % (for related terms label) ──────────────────────────────
     const relTerms   = sig.related_terms || [];
-    const covBadge   = document.getElementById('seo-coverage-badge');
+    let covPct = null;
     if (relTerms.length) {
       const covFound = relTerms.filter(t => copyText.includes(t.toLowerCase().trim())).length;
-      const covTotal = relTerms.length;
-      const covPct   = Math.round(100 * covFound / covTotal);
-      const covClass = covPct >= 80 ? 'good' : covPct >= 60 ? 'mid' : 'low';
-      covBadge.innerHTML = `<span class="seo-coverage-badge ${covClass}">Copertura SEO: ${covFound}/${covTotal} (${covPct}%)</span>`;
-    } else { covBadge.innerHTML = ''; }
+      covPct = Math.round(100 * covFound / relTerms.length);
+    }
 
     // ── Keyword pool + entities (Proposal 4 layout) ────────────────────────
     const allKws      = sig.all_keywords || [];
@@ -10483,7 +10485,7 @@
         return `<span class="kw-tag selected${inCopy ? ' in-copy' : ' missing'}" title="${title}">${esc(kw)}</span>`;
       }).join(' ');
       const relSection = selKws.length ? `
-        <div class="seo-group-label">Related terms selezionati — ${selInCt}/${selKws.length} nel testo</div>
+        <div class="seo-group-label">Related terms selezionati — ${selInCt}/${selKws.length} nel testo${covPct !== null ? ' · ' + covPct + '%' : ''}</div>
         <div class="seo-tags">${selTagsHtml}</div>` : '';
 
       // 3. Key entities section (inline)
