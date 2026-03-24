@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review | Creative Rooms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c1: #ccff33; --c2: #836fff; --c3: #645f74; --c4: #211951;
+      --c5: #878787; --c7: #fafbfc; --c8: #ffffff;
+      --line: rgba(33,25,81,0.08); --shadow: 0 18px 48px rgba(33,25,81,0.08);
+      --max: 1180px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #fff; color: var(--c4); font-family: "Bricolage Grotesque", sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    .page { overflow-x: clip; }
+
+    /* ── Topbar ── */
+    .topbar { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,0.93); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .nav-top { max-width: var(--max); margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -0.04em; font-size: 17px; }
+    .brand-mark { width: 13px; height: 13px; border-radius: 50%; background: linear-gradient(135deg, var(--c1), var(--c2)); box-shadow: 0 0 0 5px rgba(204,255,51,0.18); }
+    .menu { background: #31295d; border-radius: 70px; border: 1px solid rgba(131,127,158,0.15); padding: 10px 22px; display: flex; align-items: center; gap: 16px; color: #fff; font-size: 13px; }
+
+    /* ── Review nav bar ── */
+    .review-bar { max-width: var(--max); margin: 0 auto; padding: 8px 20px 10px; display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--line); }
+    .nav-arrow { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--c4); transition: background .15s, opacity .15s; flex-shrink: 0; }
+    .nav-arrow:hover { background: var(--c7); }
+    .nav-arrow:disabled { opacity: 0.28; cursor: default; }
+    .page-select-wrap { flex: 1; min-width: 0; }
+    #page-select { width: 100%; height: 34px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--c4); font-family: inherit; font-size: 13px; font-weight: 600; padding: 0 10px; cursor: pointer; appearance: none; }
+    .nav-counter { font-size: 12px; color: var(--c3); white-space: nowrap; flex-shrink: 0; }
+    .approve-btn { height: 34px; padding: 0 16px; border-radius: 999px; border: none; background: var(--c4); color: #fff; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background .15s, transform .12s; }
+    .approve-btn:hover:not(:disabled) { background: #31295d; transform: translateY(-1px); }
+    .approve-btn:disabled { opacity: 0.65; cursor: default; transform: none; }
+    .approve-btn.approved { background: #16a34a; }
+    .approve-btn.error { background: #dc2626; }
+    .download-btn { height: 34px; padding: 0 16px; border-radius: 999px; border: 1.5px solid #16a34a; background: transparent; color: #16a34a; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background .15s, opacity .15s; display: none; }
+    .download-btn:hover { background: rgba(22,163,74,0.07); }
+    .download-btn.visible { display: inline-flex; align-items: center; gap: 6px; }
+
+    /* ── Contenteditable ── */
+    [contenteditable="true"] { outline: none; border-radius: 3px; cursor: text; }
+    [contenteditable="true"]:hover { outline: 1.5px dashed rgba(131,111,255,0.45); outline-offset: 3px; }
+    [contenteditable="true"]:focus { outline: 2px solid var(--c2); outline-offset: 3px; background: rgba(131,111,255,0.04); }
+
+    /* ── Warnings / Extras box ── */
+    .alerts-wrap { max-width: var(--max); margin: 16px auto 0; padding: 0 20px; }
+    .alerts-box { background: #fffbe6; border: 1.5px solid #e6b800; border-radius: 18px; padding: 18px 22px; display: grid; gap: 14px; }
+    .alerts-box.info-only { background: #f8f8fb; border-color: var(--line); }
+    .alerts-box h4 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #92600a; }
+    .alerts-box.info-only h4 { color: var(--c3); }
+    .warning-list { margin: 0; padding: 0 0 0 16px; color: #7a4e08; font-size: 14px; line-height: 1.7; }
+    .warning-list li.warn-info { color: var(--c3); list-style-type: "ℹ  "; }
+    /* ── Coverage badge (inline in panel header) ── */
+    .seo-coverage-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: rgba(33,25,81,0.06); color: var(--c4); border: 1.5px solid rgba(33,25,81,0.18); }
+    .seo-coverage-badge.good { border-color: #16a34a; color: #15803d; }
+    .seo-coverage-badge.mid  { border-color: #d97706; color: #b45309; }
+    .seo-coverage-badge.low  { border-color: #dc2626; color: #dc2626; }
+    /* Internal links suggestion box */
+    .ilinks-box { background: #f8f8fb; border: 1.5px solid var(--line); border-radius: 18px; padding: 18px 22px; }
+    .ilinks-box h4 { margin: 0 0 14px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c3); }
+    .ilinks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+    .ilink-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 4px; }
+    .ilink-target { font-size: 15px; font-weight: 700; letter-spacing: -0.03em; color: var(--c4); }
+    .ilink-anchor { font-size: 13px; color: var(--c3); font-style: italic; }
+    .ilink-placement { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; background: rgba(131,111,255,0.1); color: var(--c2); border-radius: 999px; padding: 2px 8px; }
+    .extras-list { display: grid; gap: 10px; }
+    .extra-item { background: rgba(255,255,255,0.72); border: 1px solid #e6b800; border-radius: 12px; overflow: hidden; }
+    .extra-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; }
+    .extra-toggle { width: 34px; height: 20px; flex-shrink: 0; cursor: pointer; accent-color: var(--c2); }
+    .extra-label { flex: 1; min-width: 0; }
+    .extra-section-name { font-weight: 700; font-size: 14px; color: var(--c4); }
+    .extra-rationale { font-size: 12px; color: var(--c3); margin-top: 1px; }
+    .extra-chevron { font-size: 13px; color: var(--c3); transition: transform .2s; flex-shrink: 0; }
+    .extra-chevron.open { transform: rotate(180deg); }
+    .extra-body { display: none; padding: 0 14px 14px; border-top: 1px solid #e6b800; }
+    .extra-body.open { display: block; }
+    .extra-field { margin-top: 10px; }
+    .extra-field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c3); display: block; margin-bottom: 4px; }
+    .extra-field-value { font-size: 14px; line-height: 1.6; color: var(--c4); padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(33,25,81,0.1); background: #fff; min-height: 32px; }
+
+    /* ── Layout ── */
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+    .hero { position: relative; background: radial-gradient(circle at 14% 14%, rgba(204,255,51,0.48), transparent 12%), radial-gradient(circle at 88% 8%, rgba(131,111,255,0.18), transparent 22%), linear-gradient(180deg,#fff 0%,#f8f9fc 100%); overflow: hidden; }
+    .hero .container { padding-top: 56px; padding-bottom: 58px; display: grid; grid-template-columns: minmax(0,1.15fr) 320px; gap: 32px; align-items: start; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; background: rgba(131,111,255,0.08); color: var(--c2); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 18px; }
+    h1 { margin: 0; max-width: 860px; font-size: clamp(50px,7.2vw,82px); line-height: 0.93; letter-spacing: -0.07em; }
+    .hero-subtitle { margin: 20px 0 0; max-width: 780px; font-size: 15px; line-height: 1.62; color: var(--c3); }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+    .cta { min-height: 52px; padding: 0 22px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; border: 1px solid rgba(33,25,81,0.12); }
+    .cta-primary { background: var(--c1); color: var(--c4); border-color: transparent; }
+    .cta-secondary { background: #fff; color: var(--c4); }
+    .hero-visual { background: linear-gradient(180deg,rgba(131,111,255,0.12),rgba(255,255,255,0.98)); border: 1px solid var(--line); border-radius: 30px; min-height: 300px; padding: 20px; box-shadow: var(--shadow); display: grid; gap: 14px; align-content: start; }
+    .hero-visual .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--c3); font-weight: 700; }
+    .hero-visual .title { font-size: 26px; line-height: 1.03; font-weight: 700; letter-spacing: -0.04em; }
+    .hero-visual .panel { min-height: 182px; border-radius: 24px; border: 1px dashed rgba(33,25,81,0.12); background: linear-gradient(135deg,rgba(204,255,51,0.15),rgba(131,111,255,0.08)),#fff; }
+    .section { border-top: 1px solid var(--line); }
+    .section.alt { background: var(--c7); }
+    .section .container { padding-top: 42px; padding-bottom: 42px; }
+    .section-head { display: flex; justify-content: space-between; gap: 18px; align-items: start; margin-bottom: 24px; }
+    .section-kicker { display: inline-flex; padding: 9px 14px; border-radius: 999px; background: rgba(204,255,51,0.28); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+    h2 { margin: 0; max-width: 760px; font-size: clamp(34px,4.6vw,58px); line-height: 0.96; letter-spacing: -0.06em; }
+    .section-intro { margin: 14px 0 0; max-width: 760px; font-size: 15px; line-height: 1.6; color: var(--c3); }
+    .process-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+    .placeholder-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+    .seo-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+    .card,.placeholder,.seo-card,.sources,.faq-item { background: #fff; border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 4px 18px rgba(33,25,81,0.04); }
+    .card { position: relative; padding: 18px; display: grid; gap: 10px; }
+    .step-index { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--c2); }
+    .step-title { font-size: 18px; font-weight: 700; line-height: 1.04; letter-spacing: -0.04em; }
+    .step-text,.faq-a,.source-url { color: var(--c3); line-height: 1.58; font-size: 14px; }
+    .seo-value { color: var(--c3); line-height: 1.58; }
+    .deliverable-card { position: relative; min-height: 72px; padding: 14px 18px; display: flex; align-items: center; }
+    .deliverable-card strong { font-size: 15px; letter-spacing: -0.03em; line-height: 1.24; }
+    .placeholder { min-height: 220px; padding: 18px; background: linear-gradient(180deg,rgba(131,111,255,0.05),rgba(255,255,255,1)); }
+    .placeholder .tag { display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(33,25,81,0.06); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--c3); margin-bottom: 18px; }
+    .placeholder h3 { margin: 0 0 10px; font-size: 28px; line-height: 1; letter-spacing: -0.05em; }
+    .placeholder p { color: var(--c3); line-height: 1.55; margin: 0; }
+    .faq-layout { display: grid; grid-template-columns: 320px minmax(0,1fr); gap: 18px; }
+    .sources,.faq-item,.seo-card { position: relative; padding: 18px; }
+    .sources h3,.seo-card h3 { margin: 0 0 12px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c3); }
+    .source-item { padding-top: 12px; border-top: 1px solid var(--line); display: grid; gap: 6px; overflow: hidden; }
+    .source-item:first-of-type { padding-top: 0; border-top: 0; }
+    .source-item strong { font-size: 15px; line-height: 1.28; word-break: break-word; overflow-wrap: break-word; }
+    .source-url { overflow-wrap: break-word; word-break: break-all; }
+    .faq-list { display: grid; gap: 14px; }
+    .faq-q { font-size: 16px; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .extra-array-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin-top: 8px; }
+    /* ── SEO term highlight ── */
+    .seo-term { background: rgba(255,138,0,0.22); border-radius: 2px; padding: 0 1px; }
+    /* ── SEO signals panel ── */
+    .seo-panel { background: rgba(33,25,81,0.03); border: 1px solid rgba(33,25,81,0.1); border-radius: 12px; overflow: hidden; }
+    .seo-panel-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--c4); }
+    .seo-panel-header:hover { background: rgba(33,25,81,0.04); }
+    .seo-panel-body { display: none; padding: 0 14px 12px; }
+    .seo-panel-body.open { display: block; }
+    .seo-group { margin-top: 10px; }
+    .seo-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c3); margin-bottom: 5px; }
+    .seo-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .seo-tag { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 12px; background: rgba(131,111,255,0.1); color: var(--c4); }
+    .seo-tag.entity { background: rgba(204,255,51,0.35); }
+    /* ── Keyword pool tags — tutti grigi, bordo varia per tier ── */
+    .kw-tag { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; cursor: default; background: rgba(33,25,81,0.06); color: var(--c4); border: 1.5px solid rgba(33,25,81,0.13); }
+    .kw-tag.keyphrase { border: 2px solid rgba(131,111,255,0.65); font-weight: 700; font-size: 13px; }
+    .kw-tag.in-copy   { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
+    .kw-tag.keyphrase.in-copy { background: rgba(255,138,0,0.22); color: #7a3a00; border-color: rgba(131,111,255,0.65); }
+    .kw-tag.entity.in-copy { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; }
+    .kw-tag.missing   { color: #dc2626; font-weight: 700; border-color: rgba(33,25,81,0.13); }
+    .kw-tag.missing::after { content: " ⚠"; font-size: 10px; }
+    .kw-tag.pool      { font-size: 11px; background: rgba(33,25,81,0.04); color: var(--c5); border-color: transparent; }
+    .kw-tag.pool.in-copy  { background: rgba(255,138,0,0.22); color: #7a3a00; font-weight: 700; border-color: transparent; opacity: .75; }
+    .kw-pool-divider  { margin: 10px 0 5px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c5); }
+    /* keyphrase vol badge */
+    .kw-vol-badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; background: rgba(33,25,81,0.06); color: var(--c3); border: 1.5px solid rgba(131,111,255,0.3); }
+    /* ── PAA / FAQ angles — 2 colonne, pallino grigio/arancione ── */
+    .seo-paa-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .seo-paa-col-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c3); margin-bottom: 6px; }
+    .seo-paa { margin: 0; padding: 0; list-style: none; }
+    .seo-paa li { padding: 2px 0 2px 13px; position: relative; font-size: 12px; color: var(--c3); line-height: 1.5; }
+    .seo-paa li::before { content: "●"; position: absolute; left: 0; top: 4px; font-size: 9px; color: var(--c5); }
+    .seo-paa li.item-used { color: var(--c4); font-weight: 700; }
+    .seo-paa li.item-used::before { color: #ff8a00; }
+    .seo-paa li.item-used .paa-text { background: rgba(255,138,0,0.14); border-radius: 4px; padding: 1px 5px; }
+    /* ── SEO metadata orange box ── */
+    .seo-meta-box { background: #fff4e6; border: 1.5px solid #e6820a; border-radius: 18px; padding: 16px 20px; }
+    .seo-meta-box h4 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #7a3e00; }
+    .seo-meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+    .seo-meta-field { background: #fff; border: 1px solid rgba(230,130,10,0.3); border-radius: 10px; padding: 10px 14px; }
+    .seo-meta-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #7a3e00; margin-bottom: 4px; }
+    .seo-meta-value { font-size: 14px; color: var(--c4); line-height: 1.5; min-height: 22px; }
+    /* ── Alerts wrap layout ── */
+    .alerts-wrap { max-width: var(--max); margin: 16px auto 0; padding: 0 20px; display: grid; gap: 10px; }
+    .seo-paa { font-size: 12px; color: var(--c3); line-height: 1.6; margin: 0; padding: 0; list-style: none; }
+    .contact-block { position: relative; background: linear-gradient(135deg,rgba(204,255,51,0.26),rgba(131,111,255,0.08)); border-radius: 30px; border: 1px solid rgba(33,25,81,0.08); padding: 28px; }
+    .seo-area { border-top: 1px solid var(--line); background: var(--c7); }
+    .seo-value { font-size: 15px; }
+    .footer { background: var(--c4); color: rgba(255,255,255,0.94); }
+    .footer .container { padding-top: 34px; padding-bottom: 36px; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; }
+    .footer h4 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; }
+    .footer p,.footer li { margin: 0; font-size: 14px; line-height: 1.55; color: rgba(255,255,255,0.72); }
+    .footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .copy-feedback { position: fixed; right: 18px; bottom: 18px; z-index: 80; background: rgba(33,25,81,0.92); color: #fff; padding: 10px 14px; border-radius: 14px; font-size: 13px; opacity: 0; transform: translateY(8px); transition: opacity .18s, transform .18s; pointer-events: none; }
+    .copy-feedback.show { opacity: 1; transform: translateY(0); }
+    .empty-state { padding: 80px 20px; text-align: center; color: var(--c3); }
+
+    @media (max-width: 980px) {
+      .hero .container,.faq-layout,.process-grid,.cards-grid,.placeholder-grid,.seo-grid,.footer .container { grid-template-columns: 1fr; }
+      .menu { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ TOPBAR ══ -->
+  <header class="topbar">
+    <div class="nav-top">
+      <div class="brand"><span class="brand-mark"></span><span>Creative Rooms</span></div>
+      <nav class="menu"><span>Servizi</span><span>Settori</span><span>Progetti</span><span>Chi siamo</span><span>Contatti</span></nav>
+    </div>
+    <div class="review-bar">
+      <button class="nav-arrow" id="nav-prev" onclick="navigatePage(-1)" title="Pagina precedente">&#8592;</button>
+      <div class="page-select-wrap">
+        <select id="page-select" onchange="loadPage(+this.value)"></select>
+      </div>
+      <button class="nav-arrow" id="nav-next" onclick="navigatePage(1)" title="Pagina successiva">&#8594;</button>
+      <span class="nav-counter" id="nav-counter"></span>
+      <button class="download-btn" id="download-btn" onclick="downloadReviews()">&#10003; Scarica reviews.json</button>
+      <button class="approve-btn" id="approve-btn" onclick="approvePage()">Approva pagina</button>
+    </div>
+  </header>
+
+  <!-- ══ TOP BOXES (SEO signals + meta bundle + warnings) ══ -->
+  <div class="alerts-wrap" id="alerts-wrap">
+
+    <!-- 1. SEO signals — gray, collapsible -->
+    <div id="seo-signals-section" style="display:none">
+      <div class="seo-panel">
+        <div class="seo-panel-header" onclick="toggleSeoPanel()">
+          <span>📊</span><span>Segnali SEO usati per questa pagina</span>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:8px;pointer-events:none">
+            <span style="font-size:11px;color:var(--c3);display:flex;align-items:center;gap:6px">
+              <span><span class="kw-tag keyphrase" style="font-size:10px;padding:1px 7px">abc</span> key phrase</span>
+              <span><span class="kw-tag in-copy" style="font-size:10px;padding:1px 7px">abc</span> nel testo</span>
+              <span><span class="kw-tag missing" style="font-size:10px;padding:1px 7px">abc</span> mancante</span>
+            </span>
+            <span id="seo-panel-chev" style="font-size:12px;color:var(--c3);transition:transform .2s;pointer-events:auto">▲</span>
+          </span>
+        </div>
+        <div class="seo-panel-body open" id="seo-panel-body">
+          <!-- Keyword pool -->
+          <div class="seo-group" id="seo-kw-pool-group" style="display:none">
+            <div class="seo-group-label" id="seo-kw-pool-label">Pool keyword ricercate dall'agente</div>
+            <div id="seo-kw-pool-tags"></div>
+          </div>
+          <!-- Key entities -->
+          <div class="seo-group" id="seo-entities-group" style="display:none">
+            <div class="seo-group-label">Concetti chiave di settore <span style="font-weight:400;color:var(--c3)">— non rimuovere in editing</span></div>
+            <div class="seo-tags" id="seo-entities-tags"></div>
+          </div>
+          <!-- PAA + FAQ angles side by side -->
+          <div class="seo-group" id="seo-paa-angles-group" style="display:none">
+            <div class="seo-paa-cols">
+              <div>
+                <div class="seo-paa-col-head">People Also Ask da Google</div>
+                <ul class="seo-paa" id="seo-paa-list"></ul>
+              </div>
+              <div>
+                <div class="seo-paa-col-head">Angoli FAQ da competitive intel</div>
+                <ul class="seo-paa" id="seo-faq-angles-list"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SEO metadata bundle — orange box (moved from bottom) -->
+    <div id="seo-meta-section">
+      <div class="seo-meta-box">
+        <h4>🔧 Bundle tecnico della pagina — SEO metadata</h4>
+        <div class="seo-meta-grid">
+          <div class="seo-meta-field">
+            <div class="seo-meta-label">Slug</div>
+            <div class="seo-meta-value" id="seo-slug" contenteditable="true" spellcheck="false"></div>
+          </div>
+          <div class="seo-meta-field">
+            <div class="seo-meta-label">Key phrase</div>
+            <div class="seo-meta-value" id="seo-keyphrase" contenteditable="true" spellcheck="false"></div>
+          </div>
+          <div class="seo-meta-field">
+            <div class="seo-meta-label">Meta title</div>
+            <div class="seo-meta-value" id="seo-meta-title" contenteditable="true" spellcheck="false"></div>
+          </div>
+          <div class="seo-meta-field">
+            <div class="seo-meta-label">Meta description</div>
+            <div class="seo-meta-value" id="seo-meta-description" contenteditable="true" spellcheck="false"></div>
+          </div>
+        </div>
+        <p style="margin:10px 0 0;font-size:12px;color:#7a3e00;opacity:0.8">Il JSON-LD verrà generato in batch dopo la review di tutte le pagine.</p>
+      </div>
+    </div>
+
+    <!-- 3. Validation warnings — yellow box -->
+    <div id="warnings-section" style="display:none">
+      <div class="alerts-box">
+        <h4>⚠ Validation warnings</h4>
+        <ul class="warning-list" id="warnings-list"></ul>
+      </div>
+    </div>
+
+    <!-- 4. Suggested extras — yellow box -->
+    <div id="extras-section" style="display:none">
+      <div class="alerts-box">
+        <h4>💡 Sezioni aggiuntive suggerite</h4>
+        <p style="font-size:13px;color:#7a4e08;margin:0 0 10px">Attiva il toggle per includere una sezione nella pagina. Il copy è editabile.</p>
+        <div class="extras-list" id="extras-list"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <div class="container">
+      <div>
+        <div class="eyebrow" id="hero-eyebrow">Servizio</div>
+        <h1 id="hero-h1" contenteditable="true" spellcheck="false"></h1>
+        <p class="hero-subtitle" id="hero-subtitle" contenteditable="true" spellcheck="false"></p>
+        <div class="hero-ctas">
+          <a class="cta cta-primary" id="hero-cta-primary" contenteditable="true" spellcheck="false" href="#"></a>
+          <a class="cta cta-secondary" id="hero-cta-secondary" contenteditable="true" spellcheck="false" href="#"></a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="label">Service Preview</div>
+        <div class="title" id="hero-visual-title">Creative Rooms</div>
+        <div class="panel"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROCESS ══ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker" id="process-pill" contenteditable="true" spellcheck="false"></div>
+          <h2 id="process-h2" contenteditable="true" spellcheck="false"></h2>
+          <p class="section-intro" id="process-subtitle" contenteditable="true" spellcheck="false"></p>
+        </div>
+      </div>
+      <div class="process-grid" id="process-steps"></div>
+    </div>
+  </section>
+
+  <!-- ══ DELIVERABLES ══ -->
+  <section class="section alt">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker" id="deliverables-pill" contenteditable="true" spellcheck="false"></div>
+          <h2 id="deliverables-h2" contenteditable="true" spellcheck="false"></h2>
+          <p class="section-intro" id="deliverables-subtitle" contenteditable="true" spellcheck="false"></p>
+        </div>
+      </div>
+      <div class="cards-grid" id="deliverables-items"></div>
+    </div>
+  </section>
+
+  <!-- ══ PORTFOLIO placeholder ══ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><div><div class="section-kicker">Selected projects</div><h2>Progetti selezionati</h2></div></div>
+      <div class="placeholder-grid">
+        <article class="placeholder"><span class="tag">Project card</span><h3>Case study 01</h3><p>Card portfolio collegata al servizio.</p></article>
+        <article class="placeholder"><span class="tag">Project card</span><h3>Case study 02</h3><p>Card portfolio collegata al servizio.</p></article>
+        <article class="placeholder"><span class="tag">Project card</span><h3>Case study 03</h3><p>Card portfolio collegata al servizio.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TIERS placeholder ══ -->
+  <section class="section alt">
+    <div class="container">
+      <div class="section-head"><div><div class="section-kicker">Tre livelli di servizio</div><h2>Tre livelli di servizio, un solo metodo.</h2></div></div>
+      <div class="placeholder-grid">
+        <article class="placeholder"><span class="tag">Tier 01</span><h3>Essenziale</h3><p>Fascia servizio con perimetro ridotto.</p></article>
+        <article class="placeholder"><span class="tag">Tier 02</span><h3>Intermedio</h3><p>Fascia servizio con maggior profondità.</p></article>
+        <article class="placeholder"><span class="tag">Tier 03</span><h3>Completo</h3><p>Fascia servizio con rollout esteso.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ RELATED SERVICES ══ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><div><div class="section-kicker">Servizi correlati</div><h2>Servizi che possono estendere il lavoro</h2></div></div>
+      <div id="related-links-box"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTORS placeholder ══ -->
+  <section class="section alt">
+    <div class="container">
+      <div class="section-head"><div><div class="section-kicker">Settori</div><h2>Dove questo servizio conta di più</h2></div></div>
+      <div class="placeholder-grid">
+        <article class="placeholder"><span class="tag">Sector</span><h3>Settore 01</h3><p>Card settore con teaser minimo.</p></article>
+        <article class="placeholder"><span class="tag">Sector</span><h3>Settore 02</h3><p>Card settore con teaser minimo.</p></article>
+        <article class="placeholder"><span class="tag">Sector</span><h3>Settore 03</h3><p>Card settore con teaser minimo.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FAQ + SOURCES ══ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker" id="faq-pill" contenteditable="true" spellcheck="false"></div>
+          <h2 id="faq-h2" contenteditable="true" spellcheck="false"></h2>
+          <p class="section-intro" id="faq-subtitle" contenteditable="true" spellcheck="false"></p>
+        </div>
+      </div>
+      <div class="faq-layout">
+        <aside class="sources">
+          <h3>Reference sources</h3>
+          <div id="sources-list"></div>
+        </aside>
+        <div class="faq-list" id="faq-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CONTACT placeholder ══ -->
+  <section class="section alt">
+    <div class="container">
+      <div class="contact-block">
+        <div class="section-kicker">Contatto finale</div>
+        <h2>Sentiamoci per fare chiarezza</h2>
+        <p class="section-intro" style="margin:0;max-width:700px">Blocco finale stabile della pagina reale.</p>
+        <div class="hero-ctas" style="margin-top:14px">
+          <a class="cta cta-primary" href="#">Prenota una call</a>
+          <a class="cta cta-secondary" href="#">Scarica la scheda</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="footer">
+    <div class="container">
+      <div><h4>Creative Rooms</h4><p>Preview per review copy interna.</p></div>
+      <div><h4>Servizi</h4><ul><li>Branding</li><li>Design</li><li>SEO & GEO</li><li>Sviluppo</li></ul></div>
+      <div><h4>Settori</h4><ul><li>Tech</li><li>Hospitality</li><li>Retail</li><li>Industria</li></ul></div>
+      <div><h4>Contatti</h4><ul><li>hello@creativerooms.it</li><li>Milano / Remote</li></ul></div>
+    </div>
+  </footer>
+</div>
+
+<div class="copy-feedback" id="copy-feedback">Copiato</div>
+
+<script>
+  // ── Data (injected by generate-review-bundle.py) ──
+  window.PAGES = [
+  {
+    "page_id": "CR-SERVICE-018",
+    "page_name": "AI & automazioni",
+    "status": "done",
+    "slug": "consulenza-ai",
+    "key_phrase": "consulenza AI",
+    "meta_title": "Consulenza AI per Aziende | Creative Rooms",
+    "meta_description": "Consulenza AI operativa: agenti intelligenti e automazioni su misura per PMI e aziende. Dall'audit al go-live, con formazione team inclusa.",
+    "json_ld": "",
+    "copy": {
+      "copy_sections": {
+        "hero": {
+          "h1": "Consulenza AI per aziende: agenti e automazioni su misura",
+          "subtitle": "Progettiamo <strong>agenti AI</strong> custom e automazioni intelligenti per PMI e aziende medio-grandi. Intelligenza artificiale per aziende che vogliono risultati operativi concreti, non advisory generico.",
+          "cta_primary": "Richiedi preventivo",
+          "cta_secondary": "Scheda servizio"
+        },
+        "process": {
+          "pill": "Come lavoriamo",
+          "h2": "Dal primo audit al go-live: come funziona la consulenza AI",
+          "subtitle": "La consulenza AI di Creative Rooms è un servizio operativo di progettazione e implementazione di agenti intelligenti e automazioni su misura per aziende. Partendo da un audit dei processi, progettiamo agenti AI custom, li integriamo nei vostri sistemi e formiamo i team. Unica nel mercato: uniamo competenza strategica e creativa con capacità tecnica reale di far funzionare agenti e automazioni intelligenti.",
+          "intro": "La consulenza AI di Creative Rooms è un servizio operativo di progettazione e implementazione di agenti intelligenti e automazioni su misura per aziende. Partendo da un audit dei processi, progettiamo agenti AI custom, li integriamo nei vostri sistemi e formiamo i team. Unica nel mercato: uniamo competenza strategica e creativa con capacità tecnica reale di far funzionare agenti e automazioni intelligenti.",
+          "steps": [
+            {
+              "title": "Audit dei processi",
+              "text": "Mappiamo attività ripetitive, colli di bottiglia e opportunità concrete di <strong>automazione processi aziendali</strong> nei flussi operativi."
+            },
+            {
+              "title": "Progettazione degli agenti",
+              "text": "Definiamo architettura, flussi decisionali e logiche degli agenti AI custom in base agli obiettivi specifici dell'azienda."
+            },
+            {
+              "title": "Sviluppo e integrazione",
+              "text": "Costruiamo agenti AI — inclusi componenti di AI generativa e AI conversazionale — e li integriamo nei sistemi esistenti tramite API."
+            },
+            {
+              "title": "Formazione e attivazione",
+              "text": "Formiamo i team con workshop pratici e supportiamo il go-live fino all'operatività autonoma del personale."
+            }
+          ]
+        },
+        "deliverables": {
+          "pill": "Output del servizio",
+          "h2": "Cosa ricevi con la consulenza AI",
+          "subtitle": "Ogni progetto si chiude con output tangibili e operativi: non documenti strategici generici, ma agenti AI funzionanti, automazioni attive e team formati per gestirli in autonomia.",
+          "items": [
+            "Report di audit con opportunità di automazione AI identificate",
+            "Architettura e specifiche degli agenti AI custom",
+            "Agenti AI sviluppati e integrati nei sistemi esistenti",
+            "Automazioni intelligenti attive sui processi identificati",
+            "Documentazione tecnica e operativa degli agenti",
+            "Workshop di <strong>formazione team AI</strong> con materiali pratici",
+            "Piano di monitoraggio e KPI per misurare il ROI",
+            "Supporto al go-live e handover per la gestione autonoma"
+          ]
+        },
+        "faq": {
+          "pill": "Domande frequenti",
+          "h2": "Tutto quello che vuoi sapere sulla consulenza AI",
+          "subtitle": "Risposte dirette su agenti AI, <strong>AI agentica</strong>, integrazione nei processi, costi e risultati attesi.",
+          "questions": [
+            {
+              "q": "Cosa sono gli agenti AI e come funzionano in azienda?",
+              "a": "Agenti AI cosa sono: sistemi software autonomi che percepiscono input, ragionano e compiono azioni per raggiungere un obiettivo senza intervento umano continuo. In azienda gestiscono processi end-to-end — raccogliendo dati, prendendo decisioni e comunicando con altri sistemi — riducendo il lavoro manuale ripetitivo e accelerando i tempi operativi."
+            },
+            {
+              "q": "Cos'è l'AI agentica e cosa la distingue dall'automazione tradizionale?",
+              "a": "L'AI agentica è un paradigma in cui sistemi AI autonomi pianificano, decidono e agiscono in sequenze multi-step per completare obiettivi complessi. A differenza dell'automazione tradizionale — che esegue regole fisse — un sistema agente AI gestisce variabili impreviste, sceglie tra percorsi alternativi e interagisce dinamicamente con altri sistemi."
+            },
+            {
+              "q": "Cosa fa un consulente AI per un'azienda?",
+              "a": "Un consulente AI analizza i processi aziendali, identifica dove l'intelligenza artificiale aziende crea valore concreto e progetta, sviluppa e integra agenti AI e automazioni su misura. Il perimetro va dall'audit iniziale alla messa in produzione, fino alla formazione dei team. Non si tratta di advisory generico: il consulente opera come progettista e sviluppatore di soluzioni operative."
+            },
+            {
+              "q": "Come avviene l'integrazione AI nei sistemi già esistenti?",
+              "a": "L'integrazione AI connette agenti e automazioni ai tool, database e flussi di lavoro già in uso, senza sostituire l'infrastruttura esistente. L'audit preliminare mappa i punti di connessione; gli agenti vengono sviluppati per comunicare con i sistemi aziendali tramite API o connettori dedicati, garantendo continuità operativa durante e dopo il go-live."
+            },
+            {
+              "q": "Quanto tempo serve per implementare agenti AI in azienda?",
+              "a": "I tempi dipendono dalla complessità dei processi, dal numero di agenti da sviluppare e dal livello di integrazione richiesto. Un primo agente AI su un processo circoscritto può essere operativo in [DURATA_DA_DEFINIRE]. Progetti più articolati richiedono tempi maggiori. L'audit iniziale fornisce una stima precisa prima di avviare lo sviluppo."
+            },
+            {
+              "q": "Quali risultati misurabili posso aspettarmi?",
+              "a": "I risultati concreti includono riduzione del tempo dedicato ad attività manuali ripetitive, aumento della velocità decisionale e riduzione degli errori operativi. I KPI vengono definiti durante l'audit in base agli obiettivi aziendali. Il ROI dell'automazione AI si misura su metriche precise: ore risparmiate, volumi gestiti, costi per transazione, tempi di risposta."
+            },
+            {
+              "q": "Qual è la differenza tra consulenza AI vera e marketing automation?",
+              "a": "La consulenza AI operativa progetta e sviluppa agenti AI custom per i processi aziendali; il marketing automation gestisce flussi di comunicazione predefiniti, non agenti autonomi. Molte agenzie aggiungono 'AI' senza capacità tecnica reale. La differenza si vede nel deliverable: un agente AI funzionante integrato nei sistemi, non un flusso di messaggi automatizzato."
+            },
+            {
+              "q": "Quanto costa una consulenza AI per PMI o aziende medio-grandi?",
+              "a": "Il costo dipende dal perimetro: numero di processi da analizzare, complessità degli agenti AI da sviluppare, livello di integrazione con i sistemi esistenti e ore di formazione previste. Un progetto su un singolo processo ha un investimento molto diverso da un programma multi-agente su scala aziendale. Contattaci per un preventivo specifico."
+            },
+            {
+              "q": "La consulenza AI è adatta anche alle PMI?",
+              "a": "Sì: l'intelligenza artificiale per PMI parte dall'audit iniziale, che identifica i processi con il rapporto costo-beneficio più favorevole, permettendo di partire da un perimetro circoscritto e scalare progressivamente. Le PMI spesso ottengono i risultati più rapidi perché i processi sono meno stratificati e gli agenti AI diventano operativi velocemente."
+            },
+            {
+              "q": "Serve un team tecnico interno per adottare agenti AI?",
+              "a": "No: la formazione AI è parte integrante del servizio. Il percorso include workshop pratici, documentazione operativa e supporto al go-live per rendere il team aziendale autonomo nella gestione e nel monitoraggio degli agenti, senza dipendenza continuativa da risorse esterne dopo la consegna."
+            }
+          ]
+        },
+        "sources": []
+      },
+      "suggested_extras": [
+        {
+          "section": "differentiator",
+          "rationale": "Questa sezione esplicita il differenziatore ibrido (strategia creativa + capacità tecnica reale di costruire agenti AI) che nessun competitor occupa. Va posizionata dopo il process o prima delle FAQ. Non è autocelebrativa: descrive concretamente cosa manca alle startup AI pure e alle agenzie marketing che 'aggiungono AI', e perché Creative Rooms occupa uno spazio unico. Contribuisce al posizionamento GEO: i modelli AI citano entità con un posizionamento chiaro e differenziato.",
+          "copy": {
+            "h2": "Perché nessun altro fa esattamente questo",
+            "subtitle": "Due mondi separati che non si parlano. Noi li abbiamo uniti.",
+            "blocks": [
+              {
+                "label": "Startup AI pure",
+                "text": "Competenza tecnica solida, ma nessun background su comunicazione, brand o UX. Costruiscono agenti che funzionano, ma non sanno come inserirli in una strategia di business o di prodotto coerente."
+              },
+              {
+                "label": "Agenzie marketing con AI",
+                "text": "Background creativo e strategico, ma nessuna capacità tecnica reale di costruire agenti AI. Aggiungono 'AI' all'offerta senza poter consegnare un agente funzionante integrato nei sistemi aziendali."
+              },
+              {
+                "label": "Creative Rooms",
+                "text": "Unica realtà che unisce competenza strategica e creativa con capacità tecnica reale di progettare, sviluppare e integrare agenti AI e automazioni intelligenti. Il cliente riceve soluzioni operative, non advisory."
+              }
+            ]
+          }
+        },
+        {
+          "section": "use_cases",
+          "rationale": "Sezione con casi d'uso concreti per settore o funzione aziendale. Aumenta la rilevanza per ricerche long-tail e fornisce ai modelli AI esempi concreti da citare. Non usare nomi di clienti reali — descrivere scenari tipo.",
+          "copy": {
+            "h2": "Dove l'intelligenza artificiale crea valore concreto",
+            "subtitle": "Scenari reali di automazione AI per PMI e aziende medio-grandi in settori diversi.",
+            "cards": [
+              {
+                "title": "Gestione documenti e reportistica",
+                "sector": "Finanza e fintech",
+                "body": "Un agente AI raccoglie dati da più fonti, genera report strutturati e li distribuisce ai destinatari giusti, eliminando ore di lavoro manuale ricorrente."
+              },
+              {
+                "title": "Supporto interno ai team",
+                "sector": "Aziende medio-grandi",
+                "body": "Un agente AI conversazionale risponde a domande operative interne — HR, IT, compliance — riducendo il carico sui team di supporto e accelerando i tempi di risposta."
+              },
+              {
+                "title": "Qualificazione e routing dei lead",
+                "sector": "Tecnologia e B2B",
+                "body": "Un agente AI analizza le richieste in entrata, le qualifica in base a criteri definiti e le assegna automaticamente al commerciale o al flusso corretto."
+              },
+              {
+                "title": "Automazione processi operativi",
+                "sector": "Industria e manifattura",
+                "body": "Sequenze multi-step di AI agentica gestiscono ordini, notifiche e aggiornamenti di stato tra sistemi diversi, senza intervento manuale e senza errori di trascrizione."
+              },
+              {
+                "title": "Analisi dati e decisioni veloci",
+                "sector": "Retail e e-commerce",
+                "body": "Agenti AI elaborano dati di vendita, inventario e comportamento utente per produrre insight azionabili in tempo reale, riducendo i tempi decisionali."
+              },
+              {
+                "title": "Onboarding clienti automatizzato",
+                "sector": "Hospitality e servizi",
+                "body": "Un agente AI guida il cliente attraverso il processo di onboarding, raccoglie documenti, verifica completezza e aggiorna i sistemi aziendali in autonomia."
+              }
+            ]
+          }
+        }
+      ],
+      "internal_links": [
+        {
+          "anchor": "Sviluppo e integrazione full stack",
+          "target_page": "Sviluppo full stack",
+          "placement_section": "process"
+        },
+        {
+          "anchor": "UX/UI e product design per interfacce AI",
+          "target_page": "UX/UI & Product Design",
+          "placement_section": "deliverables"
+        },
+        {
+          "anchor": "Lead generation B2B con automazioni intelligenti",
+          "target_page": "Lead Generation B2B",
+          "placement_section": "faq"
+        },
+        {
+          "anchor": "Strategie SEO e GEO per la visibilità AI",
+          "target_page": "Strategie SEO & GEO",
+          "placement_section": "faq"
+        },
+        {
+          "anchor": "Siti web e e-commerce integrabili con agenti AI",
+          "target_page": "Siti web & e-commerce",
+          "placement_section": "deliverables"
+        }
+      ],
+      "constraints": {
+        "hero_h1_chars_max": 60,
+        "hero_h1_words_min": 8,
+        "hero_h1_words_max": 12,
+        "hero_subtitle_words_min": 26,
+        "hero_subtitle_words_max": 35,
+        "hero_subtitle_chars_min": 150,
+        "hero_subtitle_chars_max": 200,
+        "cta_primary_words_max": 4,
+        "cta_secondary_words_max": 4,
+        "process_pill_words_max": 3,
+        "process_h2_words_min": 8,
+        "process_h2_words_max": 12,
+        "process_subtitle_words_min": 18,
+        "process_subtitle_words_max": 28,
+        "process_steps_exact": 4,
+        "process_step_title_words_min": 2,
+        "process_step_title_words_max": 4,
+        "process_step_text_words_min": 12,
+        "process_step_text_words_max": 18,
+        "deliverables_pill_words_max": 3,
+        "deliverables_h2_words_min": 6,
+        "deliverables_h2_words_max": 10,
+        "deliverables_subtitle_words_min": 25,
+        "deliverables_subtitle_words_max": 35,
+        "deliverables_items_min": 5,
+        "deliverables_items_max": 8,
+        "deliverable_item_words_min": 3,
+        "deliverable_item_words_max": 10,
+        "faq_pill_words_max": 2,
+        "faq_h2_words_min": 5,
+        "faq_h2_words_max": 9,
+        "faq_subtitle_words_min": 15,
+        "faq_subtitle_words_max": 25,
+        "faq_items_min": 8,
+        "faq_items_max": 12,
+        "faq_question_words_min": 5,
+        "faq_question_words_max": 12,
+        "faq_answer_words_min": 35,
+        "faq_answer_words_max": 65,
+        "sources_min": 3,
+        "sources_max": 10
+      },
+      "seo_signals": {
+        "related_terms": [
+          "agenti AI",
+          "agente AI",
+          "AI agentica",
+          "agenti AI cosa sono",
+          "intelligenza artificiale per aziende",
+          "automazione processi aziendali",
+          "AI conversazionale",
+          "intelligenza artificiale aziende",
+          "AI generativa",
+          "formazione AI",
+          "integrazione AI",
+          "automazione AI"
+        ],
+        "key_entities": [
+          "Agenti AI",
+          "AI agentica",
+          "Automazione processi aziendali",
+          "Integrazione sistemi AI",
+          "Audit processi AI",
+          "Formazione team AI",
+          "Intelligenza artificiale per PMI",
+          "Automazioni intelligenti custom",
+          "Change management AI",
+          "ROI automazione intelligente"
+        ],
+        "paa_questions": [
+          "Cosa fa un consulente AI?",
+          "Qual è la migliore IA gratuita?",
+          "Cosa fa un esperto di AI?",
+          "Quanto guadagna un consulente AI?",
+          "AI consultant: chi è, competenze e stipendio - Grafton",
+          "AI Engineer: chi è l'ingegnere dell'intelligenza artificiale - Adecco",
+          "Artificial Intelligence Specialist: chi è e di cosa si occupa - Unicusano"
+        ],
+        "faq_angles": [
+          "Cosa sono gli agenti AI e come funzionano nei processi aziendali?",
+          "Qual è la differenza tra AI agentica e automazione tradizionale?",
+          "Come si integra la consulenza AI nei sistemi e processi esistenti?",
+          "Quanto tempo e risorse servono per implementare agenti AI in azienda?",
+          "Quali risultati misurabili posso aspettarmi da una consulenza AI operativa?"
+        ],
+        "unique_angle": "Creative Rooms è l'unica realtà che progetta e implementa agenti AI e automazioni intelligenti su misura combinando competenza strategica/creativa con capacità tecnica reale, non advisory generico né marketing automation mascherata.",
+        "answer_first_paragraph": "La consulenza AI di Creative Rooms è un servizio operativo di progettazione e implementazione di agenti intelligenti e automazioni su misura per aziende. Partendo da un audit dei processi, progettiamo agenti AI custom, li integriamo nei vostri sistemi e formiamo i team. Unica nel mercato: uniamo competenza strategica e creativa con capacità tecnica reale di far funzionare agenti e automazioni intelligenti.",
+        "key_phrase_volume": 170,
+        "all_keywords": [
+          "consulenza AI",
+          "agenti AI",
+          "agente AI",
+          "AI agentica",
+          "agenti AI cosa sono",
+          "intelligenza artificiale per aziende",
+          "automazione processi aziendali",
+          "AI conversazionale",
+          "intelligenza artificiale aziende",
+          "AI generativa",
+          "formazione AI",
+          "integrazione AI",
+          "automazione AI",
+          "intelligenza artificiale per le aziende",
+          "servizi intelligenza artificiale",
+          "agenti AI esempi",
+          "agenti AI gratis",
+          "agenti AI migliori",
+          "agenti AI google",
+          "agenti AI microsoft",
+          "agenti AI openai",
+          "agenti AI gemini",
+          "AI agentica significato",
+          "agentic AI traduzione",
+          "consulente AI Milano",
+          "corso intelligenza artificiale per aziende",
+          "corsi intelligenza artificiale per aziende",
+          "AI per analisi finanziaria",
+          "finanza AI",
+          "orchestrazione AI"
+        ],
+        "all_keywords_volumes": {}
+      }
+    },
+    "_copy_json_raw": "{\"copy_sections\":{\"hero\":{\"h1\":\"Consulenza AI per aziende: agenti e automazioni su misura\",\"subtitle\":\"Progettiamo <strong>agenti AI</strong> custom e automazioni intelligenti per PMI e aziende medio-grandi. Intelligenza artificiale per aziende che vogliono risultati operativi concreti, non advisory generico.\",\"cta_primary\":\"Richiedi preventivo\",\"cta_secondary\":\"Scheda servizio\"},\"process\":{\"pill\":\"Come lavoriamo\",\"h2\":\"Dal primo audit al go-live: come funziona la consulenza AI\",\"subtitle\":\"La consulenza AI di Creative Rooms è un servizio operativo di progettazione e implementazione di agenti intelligenti e automazioni su misura per aziende. Partendo da un audit dei processi, progettiamo agenti AI custom, li integriamo nei vostri sistemi e formiamo i team. Unica nel mercato: uniamo competenza strategica e creativa con capacità tecnica reale di far funzionare agenti e automazioni intelligenti.\",\"intro\":\"La consulenza AI di Creative Rooms è un servizio operativo di progettazione e implementazione di agenti intelligenti e automazioni su misura per aziende. Partendo da un audit dei processi, progettiamo agenti AI custom, li integriamo nei vostri sistemi e formiamo i team. Unica nel mercato: uniamo competenza strategica e creativa con capacità tecnica reale di far funzionare agenti e automazioni intelligenti.\",\"steps\":[{\"title\":\"Audit dei processi\",\"text\":\"Mappiamo attività ripetitive, colli di bottiglia e opportunità concrete di <strong>automazione processi aziendali</strong> nei flussi operativi.\"},{\"title\":\"Progettazione degli agenti\",\"text\":\"Definiamo architettura, flussi decisionali e logiche degli agenti AI custom in base agli obiettivi specifici dell'azienda.\"},{\"title\":\"Sviluppo e integrazione\",\"text\":\"Costruiamo agenti AI — inclusi componenti di AI generativa e AI conversazionale — e li integriamo nei sistemi esistenti tramite API.\"},{\"title\":\"Formazione e attivazione\",\"text\":\"Formiamo i team con workshop pratici e supportiamo il go-live fino all'operatività autonoma del personale.\"}]},\"deliverables\":{\"pill\":\"Output del servizio\",\"h2\":\"Cosa ricevi con la consulenza AI\",\"subtitle\":\"Ogni progetto si chiude con output tangibili e operativi: non documenti strategici generici, ma agenti AI funzionanti, automazioni attive e team formati per gestirli in autonomia.\",\"items\":[\"Report di audit con opportunità di automazione AI identificate\",\"Architettura e specifiche degli agenti AI custom\",\"Agenti AI sviluppati e integrati nei sistemi esistenti\",\"Automazioni intelligenti attive sui processi identificati\",\"Documentazione tecnica e operativa degli agenti\",\"Workshop di <strong>formazione team AI</strong> con materiali pratici\",\"Piano di monitoraggio e KPI per misurare il ROI\",\"Supporto al go-live e handover per la gestione autonoma\"]},\"faq\":{\"pill\":\"Domande frequenti\",\"h2\":\"Tutto quello che vuoi sapere sulla consulenza AI\",\"subtitle\":\"Risposte dirette su agenti AI, <strong>AI agentica</strong>, integrazione nei processi, costi e risultati attesi.\",\"questions\":[{\"q\":\"Cosa sono gli agenti AI e come funzionano in azienda?\",\"a\":\"Agenti AI cosa sono: sistemi software autonomi che percepiscono input, ragionano e compiono azioni per raggiungere un obiettivo senza intervento umano continuo. In azienda gestiscono processi end-to-end — raccogliendo dati, prendendo decisioni e comunicando con altri sistemi — riducendo il lavoro manuale ripetitivo e accelerando i tempi operativi.\"},{\"q\":\"Cos'è l'AI agentica e cosa la distingue dall'automazione tradizionale?\",\"a\":\"L'AI agentica è un paradigma in cui sistemi AI autonomi pianificano, decidono e agiscono in sequenze multi-step per completare obiettivi complessi. A differenza dell'automazione tradizionale — che esegue regole fisse — un sistema agente AI gestisce variabili impreviste, sceglie tra percorsi alternativi e interagisce dinamicamente con altri sistemi.\"},{\"q\":\"Cosa fa un consulente AI per un'azienda?\",\"a\":\"Un consulente AI analizza i processi aziendali, identifica dove l'intelligenza artificiale aziende crea valore concreto e progetta, sviluppa e integra agenti AI e automazioni su misura. Il perimetro va dall'audit iniziale alla messa in produzione, fino alla formazione dei team. Non si tratta di advisory generico: il consulente opera come progettista e sviluppatore di soluzioni operative.\"},{\"q\":\"Come avviene l'integrazione AI nei sistemi già esistenti?\",\"a\":\"L'integrazione AI connette agenti e automazioni ai tool, database e flussi di lavoro già in uso, senza sostituire l'infrastruttura esistente. L'audit preliminare mappa i punti di connessione; gli agenti vengono sviluppati per comunicare con i sistemi aziendali tramite API o connettori dedicati, garantendo continuità operativa durante e dopo il go-live.\"},{\"q\":\"Quanto tempo serve per implementare agenti AI in azienda?\",\"a\":\"I tempi dipendono dalla complessità dei processi, dal numero di agenti da sviluppare e dal livello di integrazione richiesto. Un primo agente AI su un processo circoscritto può essere operativo in [DURATA_DA_DEFINIRE]. Progetti più articolati richiedono tempi maggiori. L'audit iniziale fornisce una stima precisa prima di avviare lo sviluppo.\"},{\"q\":\"Quali risultati misurabili posso aspettarmi?\",\"a\":\"I risultati concreti includono riduzione del tempo dedicato ad attività manuali ripetitive, aumento della velocità decisionale e riduzione degli errori operativi. I KPI vengono definiti durante l'audit in base agli obiettivi aziendali. Il ROI dell'automazione AI si misura su metriche precise: ore risparmiate, volumi gestiti, costi per transazione, tempi di risposta.\"},{\"q\":\"Qual è la differenza tra consulenza AI vera e marketing automation?\",\"a\":\"La consulenza AI operativa progetta e sviluppa agenti AI custom per i processi aziendali; il marketing automation gestisce flussi di comunicazione predefiniti, non agenti autonomi. Molte agenzie aggiungono 'AI' senza capacità tecnica reale. La differenza si vede nel deliverable: un agente AI funzionante integrato nei sistemi, non un flusso di messaggi automatizzato.\"},{\"q\":\"Quanto costa una consulenza AI per PMI o aziende medio-grandi?\",\"a\":\"Il costo dipende dal perimetro: numero di processi da analizzare, complessità degli agenti AI da sviluppare, livello di integrazione con i sistemi esistenti e ore di formazione previste. Un progetto su un singolo processo ha un investimento molto diverso da un programma multi-agente su scala aziendale. Contattaci per un preventivo specifico.\"},{\"q\":\"La consulenza AI è adatta anche alle PMI?\",\"a\":\"Sì: l'intelligenza artificiale per PMI parte dall'audit iniziale, che identifica i processi con il rapporto costo-beneficio più favorevole, permettendo di partire da un perimetro circoscritto e scalare progressivamente. Le PMI spesso ottengono i risultati più rapidi perché i processi sono meno stratificati e gli agenti AI diventano operativi velocemente.\"},{\"q\":\"Serve un team tecnico interno per adottare agenti AI?\",\"a\":\"No: la formazione AI è parte integrante del servizio. Il percorso include workshop pratici, documentazione operativa e supporto al go-live per rendere il team aziendale autonomo nella gestione e nel monitoraggio degli agenti, senza dipendenza continuativa da risorse esterne dopo la consegna.\"}]},\"sources\":[]},\"suggested_extras\":[{\"section\":\"differentiator\",\"rationale\":\"Questa sezione esplicita il differenziatore ibrido (strategia creativa + capacità tecnica reale di costruire agenti AI) che nessun competitor occupa. Va posizionata dopo il process o prima delle FAQ. Non è autocelebrativa: descrive concretamente cosa manca alle startup AI pure e alle agenzie marketing che 'aggiungono AI', e perché Creative Rooms occupa uno spazio unico. Contribuisce al posizionamento GEO: i modelli AI citano entità con un posizionamento chiaro e differenziato.\",\"copy\":{\"h2\":\"Perché nessun altro fa esattamente questo\",\"subtitle\":\"Due mondi separati che non si parlano. Noi li abbiamo uniti.\",\"blocks\":[{\"label\":\"Startup AI pure\",\"text\":\"Competenza tecnica solida, ma nessun background su comunicazione, brand o UX. Costruiscono agenti che funzionano, ma non sanno come inserirli in una strategia di business o di prodotto coerente.\"},{\"label\":\"Agenzie marketing con AI\",\"text\":\"Background creativo e strategico, ma nessuna capacità tecnica reale di costruire agenti AI. Aggiungono 'AI' all'offerta senza poter consegnare un agente funzionante integrato nei sistemi aziendali.\"},{\"label\":\"Creative Rooms\",\"text\":\"Unica realtà che unisce competenza strategica e creativa con capacità tecnica reale di progettare, sviluppare e integrare agenti AI e automazioni intelligenti. Il cliente riceve soluzioni operative, non advisory.\"}]}},{\"section\":\"use_cases\",\"rationale\":\"Sezione con casi d'uso concreti per settore o funzione aziendale. Aumenta la rilevanza per ricerche long-tail e fornisce ai modelli AI esempi concreti da citare. Non usare nomi di clienti reali — descrivere scenari tipo.\",\"copy\":{\"h2\":\"Dove l'intelligenza artificiale crea valore concreto\",\"subtitle\":\"Scenari reali di automazione AI per PMI e aziende medio-grandi in settori diversi.\",\"cards\":[{\"title\":\"Gestione documenti e reportistica\",\"sector\":\"Finanza e fintech\",\"body\":\"Un agente AI raccoglie dati da più fonti, genera report strutturati e li distribuisce ai destinatari giusti, eliminando ore di lavoro manuale ricorrente.\"},{\"title\":\"Supporto interno ai team\",\"sector\":\"Aziende medio-grandi\",\"body\":\"Un agente AI conversazionale risponde a domande operative interne — HR, IT, compliance — riducendo il carico sui team di supporto e accelerando i tempi di risposta.\"},{\"title\":\"Qualificazione e routing dei lead\",\"sector\":\"Tecnologia e B2B\",\"body\":\"Un agente AI analizza le richieste in entrata, le qualifica in base a criteri definiti e le assegna automaticamente al commerciale o al flusso corretto.\"},{\"title\":\"Automazione processi operativi\",\"sector\":\"Industria e manifattura\",\"body\":\"Sequenze multi-step di AI agentica gestiscono ordini, notifiche e aggiornamenti di stato tra sistemi diversi, senza intervento manuale e senza errori di trascrizione.\"},{\"title\":\"Analisi dati e decisioni veloci\",\"sector\":\"Retail e e-commerce\",\"body\":\"Agenti AI elaborano dati di vendita, inventario e comportamento utente per produrre insight azionabili in tempo reale, riducendo i tempi decisionali.\"},{\"title\":\"Onboarding clienti automatizzato\",\"sector\":\"Hospitality e servizi\",\"body\":\"Un agente AI guida il cliente attraverso il processo di onboarding, raccoglie documenti, verifica completezza e aggiorna i sistemi aziendali in autonomia.\"}]}}],\"internal_links\":[{\"anchor\":\"Sviluppo e integrazione full stack\",\"target_page\":\"Sviluppo full stack\",\"placement_section\":\"process\"},{\"anchor\":\"UX/UI e product design per interfacce AI\",\"target_page\":\"UX/UI & Product Design\",\"placement_section\":\"deliverables\"},{\"anchor\":\"Lead generation B2B con automazioni intelligenti\",\"target_page\":\"Lead Generation B2B\",\"placement_section\":\"faq\"},{\"anchor\":\"Strategie SEO e GEO per la visibilità AI\",\"target_page\":\"Strategie SEO & GEO\",\"placement_section\":\"faq\"},{\"anchor\":\"Siti web e e-commerce integrabili con agenti AI\",\"target_page\":\"Siti web & e-commerce\",\"placement_section\":\"deliverables\"}],\"constraints\":{\"hero_h1_chars_max\":60,\"hero_h1_words_min\":8,\"hero_h1_words_max\":12,\"hero_subtitle_words_min\":26,\"hero_subtitle_words_max\":35,\"hero_subtitle_chars_min\":150,\"hero_subtitle_chars_max\":200,\"cta_primary_words_max\":4,\"cta_secondary_words_max\":4,\"process_pill_words_max\":3,\"process_h2_words_min\":8,\"process_h2_words_max\":12,\"process_subtitle_words_min\":18,\"process_subtitle_words_max\":28,\"process_steps_exact\":4,\"process_step_title_words_min\":2,\"process_step_title_words_max\":4,\"process_step_text_words_min\":12,\"process_step_text_words_max\":18,\"deliverables_pill_words_max\":3,\"deliverables_h2_words_min\":6,\"deliverables_h2_words_max\":10,\"deliverables_subtitle_words_min\":25,\"deliverables_subtitle_words_max\":35,\"deliverables_items_min\":5,\"deliverables_items_max\":8,\"deliverable_item_words_min\":3,\"deliverable_item_words_max\":10,\"faq_pill_words_max\":2,\"faq_h2_words_min\":5,\"faq_h2_words_max\":9,\"faq_subtitle_words_min\":15,\"faq_subtitle_words_max\":25,\"faq_items_min\":8,\"faq_items_max\":12,\"faq_question_words_min\":5,\"faq_question_words_max\":12,\"faq_answer_words_min\":35,\"faq_answer_words_max\":65,\"sources_min\":3,\"sources_max\":10},\"seo_signals\":{\"related_terms\":[\"agenti AI\",\"agente AI\",\"AI agentica\",\"agenti AI cosa sono\",\"intelligenza artificiale per aziende\",\"automazione processi aziendali\",\"AI conversazionale\",\"intelligenza artificiale aziende\",\"AI generativa\",\"formazione AI\",\"integrazione AI\",\"automazione AI\"],\"key_entities\":[\"Agenti AI\",\"AI agentica\",\"Automazione processi aziendali\",\"Integrazione sistemi AI\",\"Audit processi AI\",\"Formazione team AI\",\"Intelligenza artificiale per PMI\",\"Automazioni intelligenti custom\",\"Change management AI\",\"ROI automazione intelligente\"],\"paa_questions\":[\"Cosa fa un consulente AI?\",\"Qual è la migliore IA gratuita?\",\"Cosa fa un esperto di AI?\",\"Quanto guadagna un consulente AI?\",\"AI consultant: chi è, competenze e stipendio - Grafton\",\"AI Engineer: chi è l'ingegnere dell'intelligenza artificiale - Adecco\",\"Artificial Intelligence Specialist: chi è e di cosa si occupa - Unicusano\"],\"faq_angles\":[\"Cosa sono gli agenti AI e come funzionano nei processi aziendali?\",\"Qual è la differenza tra AI agentica e automazione tradizionale?\",\"Come si integra la consulenza AI nei sistemi e processi esistenti?\",\"Quanto tempo e risorse servono per implementare agenti AI in azienda?\",\"Quali risultati misurabili posso aspettarmi da una consulenza AI operativa?\"],\"unique_angle\":\"Creative Rooms è l'unica realtà che progetta e implementa agenti AI e automazioni intelligenti su misura combinando competenza strategica/creativa con capacità tecnica reale, non advisory generico né marketing automation mascherata.\",\"answer_first_paragraph\":\"La consulenza AI di Creative Rooms è un servizio operativo di progettazione e implementazione di agenti intelligenti e automazioni su misura per aziende. Partendo da un audit dei processi, progettiamo agenti AI custom, li integriamo nei vostri sistemi e formiamo i team. Unica nel mercato: uniamo competenza strategica e creativa con capacità tecnica reale di far funzionare agenti e automazioni intelligenti.\",\"key_phrase_volume\":170,\"all_keywords\":[\"consulenza AI\",\"agenti AI\",\"agente AI\",\"AI agentica\",\"agenti AI cosa sono\",\"intelligenza artificiale per aziende\",\"automazione processi aziendali\",\"AI conversazionale\",\"intelligenza artificiale aziende\",\"AI generativa\",\"formazione AI\",\"integrazione AI\",\"automazione AI\",\"intelligenza artificiale per le aziende\",\"servizi intelligenza artificiale\",\"agenti AI esempi\",\"agenti AI gratis\",\"agenti AI migliori\",\"agenti AI google\",\"agenti AI microsoft\",\"agenti AI openai\",\"agenti AI gemini\",\"AI agentica significato\",\"agentic AI traduzione\",\"consulente AI Milano\",\"corso intelligenza artificiale per aziende\",\"corsi intelligenza artificiale per aziende\",\"AI per analisi finanziaria\",\"finanza AI\",\"orchestrazione AI\"],\"all_keywords_volumes\":{}}}",
+    "suggested_extras": [
+      {
+        "section": "differentiator",
+        "rationale": "Questa sezione esplicita il differenziatore ibrido (strategia creativa + capacità tecnica reale di costruire agenti AI) che nessun competitor occupa. Va posizionata dopo il process o prima delle FAQ. Non è autocelebrativa: descrive concretamente cosa manca alle startup AI pure e alle agenzie marketing che 'aggiungono AI', e perché Creative Rooms occupa uno spazio unico. Contribuisce al posizionamento GEO: i modelli AI citano entità con un posizionamento chiaro e differenziato.",
+        "copy": {
+          "h2": "Perché nessun altro fa esattamente questo",
+          "subtitle": "Due mondi separati che non si parlano. Noi li abbiamo uniti.",
+          "blocks": [
+            {
+              "label": "Startup AI pure",
+              "text": "Competenza tecnica solida, ma nessun background su comunicazione, brand o UX. Costruiscono agenti che funzionano, ma non sanno come inserirli in una strategia di business o di prodotto coerente."
+            },
+            {
+              "label": "Agenzie marketing con AI",
+              "text": "Background creativo e strategico, ma nessuna capacità tecnica reale di costruire agenti AI. Aggiungono 'AI' all'offerta senza poter consegnare un agente funzionante integrato nei sistemi aziendali."
+            },
+            {
+              "label": "Creative Rooms",
+              "text": "Unica realtà che unisce competenza strategica e creativa con capacità tecnica reale di progettare, sviluppare e integrare agenti AI e automazioni intelligenti. Il cliente riceve soluzioni operative, non advisory."
+            }
+          ]
+        }
+      },
+      {
+        "section": "use_cases",
+        "rationale": "Sezione con 4-6 casi d'uso concreti per settore o funzione aziendale. Aumenta la rilevanza per ricerche long-tail e fornisce ai modelli AI esempi concreti da citare. Non usare nomi di clienti reali — descrivere scenari tipo.",
+        "copy": {
+          "h2": "Dove l'intelligenza artificiale crea valore concreto",
+          "subtitle": "Scenari reali di automazione AI per PMI e aziende medio-grandi in settori diversi.",
+          "cards": [
+            {
+              "title": "Gestione documenti e reportistica",
+              "sector": "Finanza e fintech",
+              "body": "Un agente AI raccoglie dati da più fonti, genera report strutturati e li distribuisce ai destinatari giusti, eliminando ore di lavoro manuale ricorrente."
+            },
+            {
+              "title": "Supporto interno ai team",
+              "sector": "Aziende medio-grandi",
+              "body": "Un agente AI conversazionale risponde a domande operative interne — HR, IT, compliance — riducendo il carico sui team di supporto e accelerando i tempi di risposta."
+            },
+            {
+              "title": "Qualificazione e routing dei lead",
+              "sector": "Tecnologia e B2B",
+              "body": "Un agente AI analizza le richieste in entrata, le qualifica in base a criteri definiti e le assegna automaticamente al commerciale o al flusso corretto."
+            },
+            {
+              "title": "Automazione processi operativi",
+              "sector": "Industria e manifattura",
+              "body": "Sequenze multi-step di AI agentica gestiscono ordini, notifiche e aggiornamenti di stato tra sistemi diversi, senza intervento manuale e senza errori di trascrizione."
+            },
+            {
+              "title": "Analisi dati e decisioni veloci",
+              "sector": "Retail e e-commerce",
+              "body": "Agenti AI elaborano dati di vendita, inventario e comportamento utente per produrre insight azionabili in tempo reale, riducendo i tempi decisionali."
+            },
+            {
+              "title": "Onboarding clienti automatizzato",
+              "sector": "Hospitality e servizi",
+              "body": "Un agente AI guida il cliente attraverso il processo di onboarding, raccoglie documenti, verifica completezza e aggiorna i sistemi aziendali in autonomia."
+            }
+          ]
+        }
+      }
+    ],
+    "copy_validation_warnings": [
+      "SEO_COVERAGE: 7/12 related terms (58%)",
+      "SEO_MISSING_TERMS: agenti AI cosa sono, automazione processi aziendali, AI conversazionale, intelligenza artificiale aziende, AI generativa",
+      "FIXER_APPLIED: fixed 1 issues",
+      "POST_FIX_SEO: key_phrase=yes, terms=12/12 (100%)"
+    ],
+    "seo_terms": [
+      "consulenza AI",
+      "agenti AI",
+      "agente AI",
+      "AI agentica",
+      "agenti AI cosa sono",
+      "intelligenza artificiale per aziende",
+      "automazione processi aziendali",
+      "AI conversazionale",
+      "intelligenza artificiale aziende",
+      "AI generativa",
+      "formazione AI",
+      "integrazione AI",
+      "automazione AI",
+      "Integrazione sistemi AI",
+      "Audit processi AI",
+      "Formazione team AI",
+      "Intelligenza artificiale per PMI",
+      "Automazioni intelligenti custom",
+      "Change management AI",
+      "ROI automazione intelligente"
+    ],
+    "seo_signals": {
+      "related_terms": [
+        "agenti AI",
+        "agente AI",
+        "AI agentica",
+        "agenti AI cosa sono",
+        "intelligenza artificiale per aziende",
+        "automazione processi aziendali",
+        "AI conversazionale",
+        "intelligenza artificiale aziende",
+        "AI generativa",
+        "formazione AI",
+        "integrazione AI",
+        "automazione AI"
+      ],
+      "key_entities": [
+        "Agenti AI",
+        "AI agentica",
+        "Automazione processi aziendali",
+        "Integrazione sistemi AI",
+        "Audit processi AI",
+        "Formazione team AI",
+        "Intelligenza artificiale per PMI",
+        "Automazioni intelligenti custom",
+        "Change management AI",
+        "ROI automazione intelligente"
+      ],
+      "paa_questions": [
+        "Cosa fa un consulente AI?",
+        "Qual è la migliore IA gratuita?",
+        "Cosa fa un esperto di AI?",
+        "Quanto guadagna un consulente AI?",
+        "AI consultant: chi è, competenze e stipendio - Grafton",
+        "AI Engineer: chi è l'ingegnere dell'intelligenza artificiale - Adecco",
+        "Artificial Intelligence Specialist: chi è e di cosa si occupa - Unicusano"
+      ],
+      "faq_angles": [
+        "Cosa sono gli agenti AI e come funzionano nei processi aziendali?",
+        "Qual è la differenza tra AI agentica e automazione tradizionale?",
+        "Come si integra la consulenza AI nei sistemi e processi esistenti?",
+        "Quanto tempo e risorse servono per implementare agenti AI in azienda?",
+        "Quali risultati misurabili posso aspettarmi da una consulenza AI operativa?"
+      ],
+      "unique_angle": "Creative Rooms è l'unica realtà che progetta e implementa agenti AI e automazioni intelligenti su misura combinando competenza strategica/creativa con capacità tecnica reale, non advisory generico né marketing automation mascherata.",
+      "answer_first_paragraph": "La consulenza AI di Creative Rooms è un servizio operativo di progettazione e implementazione di agenti intelligenti e automazioni su misura per aziende. Partendo da un audit dei processi, progettiamo agenti AI custom, li integriamo nei vostri sistemi e formiamo i team. Unica nel mercato: uniamo competenza strategica e creativa con capacità tecnica reale di far funzionare agenti e automazioni intelligenti.",
+      "key_phrase_volume": 170,
+      "all_keywords": [
+        "consulenza AI",
+        "agenti AI",
+        "agente AI",
+        "AI agentica",
+        "agenti AI cosa sono",
+        "intelligenza artificiale per aziende",
+        "automazione processi aziendali",
+        "AI conversazionale",
+        "intelligenza artificiale aziende",
+        "AI generativa",
+        "formazione AI",
+        "integrazione AI",
+        "automazione AI",
+        "intelligenza artificiale per le aziende",
+        "servizi intelligenza artificiale",
+        "agenti AI esempi",
+        "agenti AI gratis",
+        "agenti AI migliori",
+        "agenti AI google",
+        "agenti AI microsoft",
+        "agenti AI openai",
+        "agenti AI gemini",
+        "AI agentica significato",
+        "agentic AI traduzione",
+        "consulente AI Milano",
+        "corso intelligenza artificiale per aziende",
+        "corsi intelligenza artificiale per aziende",
+        "AI per analisi finanziaria",
+        "finanza AI",
+        "orchestrazione AI"
+      ],
+      "all_keywords_volumes": {}
+    },
+    "research_results": {
+      "key_phrase": "consulenza AI",
+      "key_phrase_volume": 170,
+      "serp_query": "consulenza AI",
+      "paa_count": 7,
+      "ai_overview_present": true,
+      "competitive_gaps_found": 4,
+      "outline_sections": 5,
+      "faq_count": 5,
+      "kw_research": {
+        "seeds_tried": [
+          "consulenza AI",
+          "agenti AI",
+          "automazione processi aziendali",
+          "agenti AI aziende",
+          "formazione AI aziendale",
+          "intelligenza artificiale per aziende",
+          "AI agentica"
+        ],
+        "total_evaluated": 62,
+        "quality_score": 8,
+        "agent_iterations": 8,
+        "dfs_calls": 8
+      },
+      "cost_total": 0.5598658,
+      "cost_breakdown": {
+        "kw_research": 0.08,
+        "context": 0.144,
+        "serp": 0.002,
+        "competitive": 0.0050088,
+        "outline": 0.10152,
+        "copy": 0.09783,
+        "review": 0.125787,
+        "seo": 0.0037199999999999998
+      }
+    }
+  }
+];
+
+  // ── State ──
+  let currentIdx = 0;
+  const LS_PREFIX = 'cr_review_';
+
+  // Restore approved set from localStorage on init
+  const approvedSet = new Set(
+    Object.keys(localStorage)
+      .filter(k => k.startsWith(LS_PREFIX))
+      .map(k => k.slice(LS_PREFIX.length))
+  );
+
+  // ── Helpers ──
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function txt(elOrId) {
+    const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+    return (el ? el.innerText || el.textContent : '').trim();
+  }
+
+  function set(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = String(value || '');
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;top:0;left:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(_) {}
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  function flashCopied() {
+    const el = document.getElementById('copy-feedback');
+    el.classList.add('show');
+    clearTimeout(window.__cpTimer);
+    window.__cpTimer = setTimeout(() => el.classList.remove('show'), 1100);
+  }
+
+  // ── Dynamic element builders ──
+  function createStep(step, i) {
+    const a = document.createElement('article');
+    a.className = 'card';
+    a.innerHTML = `
+      <div class="step-index">Step ${String(i+1).padStart(2,'0')}</div>
+      <div class="step-title" contenteditable="true" spellcheck="false" data-step-idx="${i}" data-step-field="title">${esc(step.title)}</div>
+      <div class="step-text" contenteditable="true" spellcheck="false" data-step-idx="${i}" data-step-field="text">${esc(step.text)}</div>`;
+    return a;
+  }
+
+  function createDeliverable(item, i) {
+    const a = document.createElement('article');
+    a.className = 'deliverable-card card';
+    a.innerHTML = `<strong contenteditable="true" spellcheck="false" data-del-idx="${i}">${esc(typeof item === 'string' ? item : item.text || item.label || String(item))}</strong>`;
+    return a;
+  }
+
+  function createFaq(item, i) {
+    const a = document.createElement('article');
+    a.className = 'faq-item';
+    a.innerHTML = `
+      <div class="faq-q" contenteditable="true" spellcheck="false" data-faq-idx="${i}" data-faq-field="q">${esc(item.q)}</div>
+      <div class="faq-a" contenteditable="true" spellcheck="false" data-faq-idx="${i}" data-faq-field="a">${esc(item.a)}</div>`;
+    return a;
+  }
+
+  function createSource(item, i) {
+    const d = document.createElement('div');
+    d.className = 'source-item';
+    const label = item.label || item.title || '';
+    const url = item.url || '';
+    d.innerHTML = `
+      <strong contenteditable="true" spellcheck="false" data-src-idx="${i}" data-src-field="label">${esc(label)}</strong>
+      <div class="source-url" contenteditable="true" spellcheck="false" data-src-idx="${i}" data-src-field="url">${esc(url)}</div>`;
+    return d;
+  }
+
+  // ── Warnings & Extras box ──
+  function buildAlertsBox(warnings, extras) {
+    const warnSec  = document.getElementById('warnings-section');
+    const warnBox  = warnSec.querySelector('.alerts-box');
+    const warnHead = warnSec.querySelector('h4');
+    const warnList = document.getElementById('warnings-list');
+    const extrasSec = document.getElementById('extras-section');
+    const extrasList = document.getElementById('extras-list');
+
+    warnList.innerHTML = '';
+    extrasList.innerHTML = '';
+
+    // ── Classify each warning ──────────────────────────────────────────────
+    const shouldSuppress = (w) => {
+      if (/^SEO_COVERAGE[_:]/.test(w))             return true;  // moved to SEO panel
+      if (/^SEO_MISSING_TERMS:/.test(w))           return true;  // shown as red border in pool
+      if (/^POST_FIX_SEO:/.test(w))               return true;  // not actionable
+      if (/^SUBTITLE_SLIGHTLY_OFF:/.test(w))       return true;  // duplicate of subtitle char warning
+      if (/^H1 is only \d+ words/.test(w))         return true;  // word-based false positive
+      if (/^SEO: key_phrase not in H1/.test(w))   return true;  // informational only
+      // Subtitle ≤215c: not worth flagging (15c tolerance)
+      const subM = w.match(/^subtitle is (\d+) chars/);
+      if (subM && parseInt(subM[1]) <= 215)        return true;
+      // H1 ≤65c: not worth flagging (5c tolerance)
+      const h1M = w.match(/H1[_\s](?:is\s+)?(\d+)\s*chars/i);
+      if (h1M && parseInt(h1M[1]) <= 65)           return true;
+      return false;
+    };
+    const realWarnings = (warnings || []).filter(w =>
+      !shouldSuppress(w) &&
+      !/^FIXER_APPLIED:/.test(w) &&
+      !/^MANUALLY_/.test(w)
+    );
+
+    const hasReal   = realWarnings.length > 0;
+    const hasExtras = extras && extras.length > 0;
+
+    if (hasReal) {
+      warnSec.style.display = '';
+      warnBox.classList.remove('info-only');
+      warnHead.textContent = '⚠ Validation warnings';
+      realWarnings.forEach(w => {
+        const li = document.createElement('li');
+        li.textContent = w;
+        warnList.appendChild(li);
+      });
+    } else { warnSec.style.display = 'none'; }
+
+    if (hasExtras) {
+      extrasSec.style.display = '';
+      extras.forEach((extra, i) => {
+        const copy = extra.copy || {};
+        const div = document.createElement('div');
+        div.className = 'extra-item';
+        div.dataset.extraSection = extra.section;
+
+        const bodyId = `extra-body-${i}`;
+        const toggleId = `extra-toggle-${i}`;
+        const chevId = `extra-chev-${i}`;
+
+        div.innerHTML = `
+          <div class="extra-header" onclick="toggleExtraBody(${i})">
+            <input type="checkbox" class="extra-toggle" id="${toggleId}" data-extra-idx="${i}" onclick="event.stopPropagation()" title="Includi questa sezione">
+            <div class="extra-label">
+              <div class="extra-section-name">${esc(extra.section)}</div>
+              <div class="extra-rationale">${esc(extra.rationale)}</div>
+            </div>
+            <span class="extra-chevron" id="${chevId}">▼</span>
+          </div>
+          <div class="extra-body" id="${bodyId}">
+            ${Object.entries(copy).map(([field, val]) => {
+              if (typeof val === 'string') {
+                return `<div class="extra-field"><label>${esc(field)}</label><div class="extra-field-value" contenteditable="true" spellcheck="false" data-extra-section="${esc(extra.section)}" data-extra-field="${esc(field)}">${esc(val)}</div></div>`;
+              } else if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
+                const itemsHtml = val.map((item, idx) => {
+                  const fieldsHtml = Object.entries(item)
+                    .filter(([k, v]) => typeof v === 'string')
+                    .map(([k, v]) => `<div class="extra-field" style="margin-top:6px"><label>${esc(k)}</label><div class="extra-field-value" contenteditable="true" spellcheck="false" data-extra-section="${esc(extra.section)}" data-extra-array-field="${esc(field)}" data-extra-array-idx="${idx}" data-extra-item-field="${esc(k)}">${esc(v)}</div></div>`).join('');
+                  return `<div style="background:rgba(33,25,81,0.03);border:1px solid rgba(33,25,81,0.08);border-radius:10px;padding:10px 12px">${fieldsHtml}</div>`;
+                }).join('');
+                return `<div class="extra-field"><label>${esc(field)} <span style="font-weight:400;color:var(--c3)">(${val.length})</span></label><div class="extra-array-grid">${itemsHtml}</div></div>`;
+              }
+              return '';
+            }).join('')}
+          </div>`;
+        extrasList.appendChild(div);
+      });
+    } else { extrasSec.style.display = 'none'; }
+  }
+
+  // ── SEO term highlighting ──
+  function escRe(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function applyHighlights(terms) {
+    if (!terms || !terms.length) return;
+    // Sort longest first to prevent partial overlaps
+    const sorted = [...terms].sort((a, b) => b.length - a.length);
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      const text = el.innerText || el.textContent || '';
+      if (!text.trim()) return;
+      let html = esc(text);
+      sorted.forEach(term => {
+        const re = new RegExp('(' + escRe(esc(term)) + ')', 'gi');
+        html = html.replace(re, '<span class="seo-term">$1</span>');
+      });
+      el.innerHTML = html;
+    });
+  }
+
+  // ── SEO signals panel ──
+  function toggleSeoPanel() {
+    const body = document.getElementById('seo-panel-body');
+    const chev = document.getElementById('seo-panel-chev');
+    body.classList.toggle('open');
+    chev.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
+  }
+
+  function buildSeoPanel(page) {
+    const sig = page.seo_signals || {};
+    const section = document.getElementById('seo-signals-section');
+    section.style.display = '';
+
+    // ── Build copy text for mechanical in-copy check ──────────────────────
+    const cs = page.copy?.copy_sections || {};
+    const copyParts = [];
+    const walkCopy = (obj) => {
+      if (typeof obj === 'string') copyParts.push(obj);
+      else if (Array.isArray(obj)) obj.forEach(walkCopy);
+      else if (obj && typeof obj === 'object') Object.values(obj).forEach(walkCopy);
+    };
+    walkCopy(cs);
+    const copyText = copyParts.join(' ').toLowerCase();
+
+    // ── Build FAQ question set for PAA/angles used-check ──────────────────
+    const faqQs = (cs.faq?.questions || []).map(q => (q.q || '').toLowerCase());
+    const isUsedInFaq = (candidate) => {
+      const cL = candidate.toLowerCase();
+      // Check word overlap: if 3+ significant words match a FAQ question, consider used
+      const words = cL.split(/\s+/).filter(w => w.length > 4);
+      return faqQs.some(fq => words.filter(w => fq.includes(w)).length >= 3);
+    };
+
+    // ── Coverage % (for related terms label) ──────────────────────────────
+    const relTerms   = sig.related_terms || [];
+    let covPct = null;
+    if (relTerms.length) {
+      const covFound = relTerms.filter(t => copyText.includes(t.toLowerCase().trim())).length;
+      covPct = Math.round(100 * covFound / relTerms.length);
+    }
+
+    // ── Keyword pool + entities (Proposal 4 layout) ────────────────────────
+    const allKws      = sig.all_keywords || [];
+    const entities    = sig.key_entities || [];
+    const kwPoolGroup = document.getElementById('seo-kw-pool-group');
+    const kwPoolTags  = document.getElementById('seo-kw-pool-tags');
+    const kwPoolLabel = document.getElementById('seo-kw-pool-label');
+    // Entities group is now rendered inline — always hide separate section
+    document.getElementById('seo-entities-group').style.display = 'none';
+
+    if (allKws.length || entities.length) {
+      kwPoolLabel.style.display = 'none';
+      const kpL    = (page.key_phrase || '').toLowerCase().trim();
+      const relSet = new Set(relTerms.map(t => t.toLowerCase().trim()));
+      const vol    = sig.key_phrase_volume;
+
+      // 1. Keyphrase section
+      const kpInCopy = kpL && kpL.length >= 3 && copyText.includes(kpL);
+      const kpSection = kpL ? `
+        <div class="seo-group-label" style="margin-top:0">Key phrase${vol ? ' · ' + vol.toLocaleString('it-IT') + ' vol/mese' : ''}</div>
+        <div class="seo-tags" style="margin-bottom:8px">
+          <span class="kw-tag keyphrase${kpInCopy ? ' in-copy' : ''}" title="key phrase principale">${esc(page.key_phrase || '')}</span>
+        </div>` : '';
+
+      // 2. Related terms section
+      const otherKws  = allKws.filter(kw => kw.toLowerCase().trim() !== kpL);
+      const selKws    = otherKws.filter(kw => relSet.has(kw.toLowerCase().trim()));
+      const poolKws   = otherKws.filter(kw => !relSet.has(kw.toLowerCase().trim()));
+      const selInCt   = selKws.filter(kw => copyText.includes(kw.toLowerCase().trim())).length;
+      const selTagsHtml = selKws.map(kw => {
+        const kwL    = kw.toLowerCase().trim();
+        const inCopy = kwL.length >= 3 && copyText.includes(kwL);
+        const title  = inCopy ? 'presente nel copy' : 'related term — non trovato nel copy';
+        return `<span class="kw-tag selected${inCopy ? ' in-copy' : ' missing'}" title="${title}">${esc(kw)}</span>`;
+      }).join(' ');
+      const relSection = selKws.length ? `
+        <div class="seo-group-label">Related terms selezionati — ${selInCt}/${selKws.length} nel testo${covPct !== null ? ' · ' + covPct + '%' : ''}</div>
+        <div class="seo-tags">${selTagsHtml}</div>` : '';
+
+      // 3. Key entities section (inline)
+      const entSection = entities.length ? `
+        <div class="seo-group-label" style="margin-top:10px">Concetti chiave di settore</div>
+        <div class="seo-tags">${entities.map(e => {
+          const eL = e.toLowerCase().trim();
+          const inCopy = eL.length >= 3 && copyText.includes(eL);
+          return `<span class="kw-tag entity${inCopy ? ' in-copy' : ''}" title="${inCopy ? 'presente nel copy' : 'non trovato nel copy'}">${esc(e)}</span>`;
+        }).join(' ')}</div>` : '';
+
+      // 4. Pool section (no border divider)
+      const poolTagsHtml = poolKws.map(kw => {
+        const kwL    = kw.toLowerCase().trim();
+        const inCopy = kwL.length >= 3 && copyText.includes(kwL);
+        const title  = inCopy ? 'presente nel copy (pool)' : 'nel pool, non selezionato';
+        return `<span class="kw-tag pool${inCopy ? ' in-copy' : ''}" title="${title}">${esc(kw)}</span>`;
+      }).join(' ');
+      const poolSection = poolKws.length ? `
+        <div class="kw-pool-divider">Pool completo — altre ${poolKws.length} keyword ricercate</div>
+        <div class="seo-tags">${poolTagsHtml}</div>` : '';
+
+      kwPoolTags.innerHTML = kpSection + relSection + entSection + poolSection;
+      kwPoolGroup.style.display = '';
+    } else { kwPoolGroup.style.display = 'none'; }
+
+    // ── PAA + FAQ angles — 2 colonne ──────────────────────────────────────
+    const paaAnglesGroup = document.getElementById('seo-paa-angles-group');
+    const paaList        = document.getElementById('seo-paa-list');
+    const faqAnglesList  = document.getElementById('seo-faq-angles-list');
+    const paa       = sig.paa_questions || [];
+    const faqAngles = sig.faq_angles    || [];
+    if (paa.length || faqAngles.length) {
+      paaList.innerHTML = paa.map(q => {
+        const used = isUsedInFaq(q);
+        return `<li class="${used ? 'item-used' : 'item-unused'}"><span class="paa-text">${esc(q)}</span></li>`;
+      }).join('');
+      faqAnglesList.innerHTML = faqAngles.map(q => {
+        const used = isUsedInFaq(q);
+        return `<li class="${used ? 'item-used' : 'item-unused'}"><span class="paa-text">${esc(q)}</span></li>`;
+      }).join('');
+      paaAnglesGroup.style.display = '';
+    } else { paaAnglesGroup.style.display = 'none'; }
+
+    // Panel aperto di default, chevron verso l'alto
+    document.getElementById('seo-panel-body').classList.add('open');
+    document.getElementById('seo-panel-chev').style.transform = 'rotate(180deg)';
+  }
+
+  function toggleExtraBody(i) {
+    const body = document.getElementById(`extra-body-${i}`);
+    const chev = document.getElementById(`extra-chev-${i}`);
+    body.classList.toggle('open');
+    chev.classList.toggle('open');
+  }
+
+  // ── Load page ──
+  function loadPage(idx) {
+    idx = +idx;
+    if (idx < 0 || idx >= window.PAGES.length) return;
+    currentIdx = idx;
+    const page = window.PAGES[idx];
+    const cs = page.copy?.copy_sections || {};
+
+    document.title = (page.page_name || 'Review') + ' | Creative Rooms Review';
+
+    // Update nav
+    const sel = document.getElementById('page-select');
+    sel.value = idx;
+    document.getElementById('nav-prev').disabled = idx === 0;
+    document.getElementById('nav-next').disabled = idx === window.PAGES.length - 1;
+    document.getElementById('nav-counter').textContent = (idx + 1) + ' / ' + window.PAGES.length;
+
+    // Approve button state
+    const btn = document.getElementById('approve-btn');
+    btn.className = 'approve-btn' + (approvedSet.has(page.page_id) ? ' approved' : '');
+    btn.textContent = approvedSet.has(page.page_id) ? 'Approvato ✓' : 'Approva pagina';
+    btn.disabled = false;
+
+    // Hero
+    set('hero-eyebrow', page.page_name);
+    set('hero-visual-title', page.page_name);
+    set('hero-h1', cs.hero?.h1 || '');
+    set('hero-subtitle', cs.hero?.subtitle || '');
+    set('hero-cta-primary', cs.hero?.cta_primary || '');
+    set('hero-cta-secondary', cs.hero?.cta_secondary || '');
+
+    // Process
+    set('process-pill', cs.process?.pill || '');
+    set('process-h2', cs.process?.h2 || '');
+    set('process-subtitle', cs.process?.subtitle || '');
+    const stepsRoot = document.getElementById('process-steps');
+    stepsRoot.innerHTML = '';
+    (cs.process?.steps || []).forEach((s, i) => stepsRoot.appendChild(createStep(s, i)));
+
+    // Deliverables
+    set('deliverables-pill', cs.deliverables?.pill || '');
+    set('deliverables-h2', cs.deliverables?.h2 || '');
+    set('deliverables-subtitle', cs.deliverables?.subtitle || '');
+    const delRoot = document.getElementById('deliverables-items');
+    delRoot.innerHTML = '';
+    (cs.deliverables?.items || []).forEach((item, i) => delRoot.appendChild(createDeliverable(item, i)));
+
+    // FAQ
+    set('faq-pill', cs.faq?.pill || '');
+    set('faq-h2', cs.faq?.h2 || '');
+    set('faq-subtitle', cs.faq?.subtitle || '');
+    const faqRoot = document.getElementById('faq-list');
+    faqRoot.innerHTML = '';
+    (cs.faq?.questions || []).forEach((item, i) => faqRoot.appendChild(createFaq(item, i)));
+
+    // Sources
+    const srcRoot = document.getElementById('sources-list');
+    srcRoot.innerHTML = '';
+    const sources = cs.sources || [];
+    if (sources.length) {
+      sources.forEach((item, i) => srcRoot.appendChild(createSource(item, i)));
+    } else {
+      srcRoot.innerHTML = '<div class="source-item" style="color:var(--c3);font-size:13px;line-height:1.6">Le fonti trovate nella SERP erano pagine di competitor o non sufficientemente autorevoli — l\'array sources è stato lasciato vuoto di conseguenza.<br>Il developer può aggiungere fonti manualmente se necessario.</div>';
+    }
+
+    // Internal links → Servizi correlati
+    const ilinksBox = document.getElementById('related-links-box');
+    const ilinks = (page.copy?.internal_links || []);
+    if (ilinks.length) {
+      const cards = ilinks.map(l => `
+        <div class="ilink-card">
+          <div class="ilink-target">${esc(l.target_page || '')}</div>
+          <div class="ilink-anchor">"${esc(l.anchor || '')}"</div>
+          <span class="ilink-placement">${esc(l.placement_section || '')}</span>
+        </div>`).join('');
+      ilinksBox.innerHTML = `<div class="ilinks-box"><h4>Suggerimenti internal linking dal workflow</h4><div class="ilinks-grid">${cards}</div></div>`;
+    } else {
+      ilinksBox.innerHTML = '<div class="ilinks-box"><h4>Suggerimenti internal linking dal workflow</h4><p style="color:var(--c3);font-size:13px;margin:0">Nessun internal link generato per questa pagina.</p></div>';
+    }
+
+    // SEO
+    set('seo-slug', page.slug || '');
+    set('seo-keyphrase', page.key_phrase || '');
+    set('seo-meta-title', page.meta_title || '');
+    set('seo-meta-description', page.meta_description || '');
+
+    // Warnings + Extras
+    buildAlertsBox(page.copy_validation_warnings || [], []); // extras nascosti dalla preview (rimangono nel DB)
+
+    // SEO signals panel + mechanical highlights
+    buildSeoPanel(page);
+    applyHighlights(page.seo_terms || []);
+
+    // Scroll top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function navigatePage(delta) {
+    loadPage(currentIdx + delta);
+  }
+
+  // ── Data collection ──
+  function collectPageData() {
+    const page = window.PAGES[currentIdx];
+    let copyObj = {};
+    try { copyObj = JSON.parse(page._copy_json_raw || JSON.stringify(page.copy || {})); } catch(_) {}
+
+    if (!copyObj.copy_sections) copyObj.copy_sections = {};
+    const cs = copyObj.copy_sections;
+
+    // Hero
+    if (!cs.hero) cs.hero = {};
+    cs.hero.h1 = txt('hero-h1');
+    cs.hero.subtitle = txt('hero-subtitle');
+    cs.hero.cta_primary = txt('hero-cta-primary');
+    cs.hero.cta_secondary = txt('hero-cta-secondary');
+
+    // Process
+    if (!cs.process) cs.process = {};
+    cs.process.pill = txt('process-pill');
+    cs.process.h2 = txt('process-h2');
+    cs.process.subtitle = txt('process-subtitle');
+    const stepEls = document.querySelectorAll('[data-step-field="title"]');
+    cs.process.steps = Array.from(stepEls).map((el, i) => ({
+      title: txt(el),
+      text: txt(document.querySelector(`[data-step-idx="${i}"][data-step-field="text"]`))
+    }));
+
+    // Deliverables
+    if (!cs.deliverables) cs.deliverables = {};
+    cs.deliverables.pill = txt('deliverables-pill');
+    cs.deliverables.h2 = txt('deliverables-h2');
+    cs.deliverables.subtitle = txt('deliverables-subtitle');
+    cs.deliverables.items = Array.from(document.querySelectorAll('[data-del-idx]')).map(el => txt(el));
+
+    // FAQ
+    if (!cs.faq) cs.faq = {};
+    cs.faq.pill = txt('faq-pill');
+    cs.faq.h2 = txt('faq-h2');
+    cs.faq.subtitle = txt('faq-subtitle');
+    const faqQEls = document.querySelectorAll('[data-faq-field="q"]');
+    cs.faq.questions = Array.from(faqQEls).map((el, i) => ({
+      q: txt(el),
+      a: txt(document.querySelector(`[data-faq-idx="${i}"][data-faq-field="a"]`))
+    }));
+
+    // Sources
+    const srcLabelEls = document.querySelectorAll('[data-src-field="label"]');
+    cs.sources = Array.from(srcLabelEls).map((el, i) => ({
+      label: txt(el),
+      url: txt(document.querySelector(`[data-src-idx="${i}"][data-src-field="url"]`))
+    }));
+
+    // Accepted extras (toggle ON)
+    const acceptedExtras = [];
+    document.querySelectorAll('.extra-toggle:checked').forEach(toggle => {
+      const idx = toggle.dataset.extraIdx;
+      const extraItem = document.querySelectorAll('.extra-item')[idx];
+      if (!extraItem) return;
+      const section = extraItem.dataset.extraSection;
+      const extraData = (page.suggested_extras || []).find(e => e.section === section);
+      if (!extraData) return;
+      const copy = { ...extraData.copy };
+      // Collect edited string fields
+      extraItem.querySelectorAll('[data-extra-field]').forEach(el => {
+        copy[el.dataset.extraField] = txt(el);
+      });
+      // Collect edited array fields (cards, points, scenarios, etc.)
+      const arrayMap = {};
+      extraItem.querySelectorAll('[data-extra-array-field]').forEach(el => {
+        const arrField = el.dataset.extraArrayField;
+        const idx = parseInt(el.dataset.extraArrayIdx);
+        const itemField = el.dataset.extraItemField;
+        if (!arrayMap[arrField]) arrayMap[arrField] = [];
+        if (!arrayMap[arrField][idx]) arrayMap[arrField][idx] = { ...((extraData.copy[arrField] || [])[idx] || {}) };
+        arrayMap[arrField][idx][itemField] = txt(el);
+      });
+      Object.assign(copy, arrayMap);
+      acceptedExtras.push({ section, rationale: extraData.rationale, copy });
+    });
+
+    return {
+      page_id: page.page_id,
+      copy_json: JSON.stringify(copyObj),
+      accepted_extras: acceptedExtras,
+      status: 'reviewed',
+      slug: txt('seo-slug'),
+      key_phrase: txt('seo-keyphrase'),
+      meta_title: txt('seo-meta-title'),
+      meta_description: txt('seo-meta-description')
+    };
+  }
+
+  // ── Approve (saves to localStorage, no network) ──
+  function approvePage() {
+    const btn = document.getElementById('approve-btn');
+    btn.disabled = true;
+    btn.textContent = '…';
+
+    try {
+      const payload = collectPageData();
+      localStorage.setItem(LS_PREFIX + payload.page_id, JSON.stringify(payload));
+      approvedSet.add(payload.page_id);
+      btn.className = 'approve-btn approved';
+      btn.textContent = 'Approvato ✓';
+      btn.disabled = false;
+      const opt = document.querySelector(`#page-select option[value="${currentIdx}"]`);
+      if (opt && !opt.text.startsWith('✓')) opt.text = '✓ ' + opt.text;
+      updateDownloadBtn();
+    } catch(err) {
+      btn.className = 'approve-btn error';
+      btn.textContent = 'Errore, riprova';
+      btn.disabled = false;
+      console.error('Approve error:', err);
+    }
+  }
+
+  // ── Download all approved reviews as JSON ──
+  function downloadReviews() {
+    const reviews = Object.keys(localStorage)
+      .filter(k => k.startsWith(LS_PREFIX))
+      .map(k => { try { return JSON.parse(localStorage.getItem(k)); } catch(_) { return null; } })
+      .filter(Boolean);
+    const blob = new Blob([JSON.stringify(reviews, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'reviews.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── Update download button visibility + counter ──
+  function updateDownloadBtn() {
+    const btn = document.getElementById('download-btn');
+    const total = window.PAGES ? window.PAGES.length : 0;
+    const done = approvedSet.size;
+    if (done > 0) {
+      btn.classList.add('visible');
+      btn.textContent = '✓ Scarica reviews.json (' + done + '/' + total + ')';
+    } else {
+      btn.classList.remove('visible');
+    }
+  }
+
+  // ── Nav init ──
+  function buildNav() {
+    const sel = document.getElementById('page-select');
+    sel.innerHTML = '';
+    window.PAGES.forEach((p, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      const name = p.page_name || ('Pagina ' + (i + 1));
+      opt.text = approvedSet.has(p.page_id) ? '✓ ' + name : name;
+      sel.appendChild(opt);
+    });
+    updateDownloadBtn();
+  }
+
+  // ── Copy-on-click (for copy buttons removed — rely on browser selection) ──
+  // Keep clipboard for any future use
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-copy]');
+    if (!el) return;
+    const target = document.getElementById(el.dataset.copy);
+    if (!target) return;
+    copyToClipboard(txt(target)).then(flashCopied);
+  });
+
+  // ── Init ──
+  if (window.PAGES && window.PAGES.length > 0) {
+    buildNav();
+    loadPage(0);
+  } else {
+    document.querySelector('.page').innerHTML = '<div class="empty-state"><h2>Nessuna pagina caricata</h2><p>Esegui <code>python3 generate-review-bundle.py</code> per generare il bundle con i dati reali.</p></div>';
+  }
+</script>
+</body>
+</html>
